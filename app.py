@@ -16,13 +16,12 @@ st.set_page_config(
 st.markdown("""
     <style>
     .main-header {
+        font-size: 2.5rem;
         color: #000000;
-        font-family: 'Helvetica Neue', sans-serif;
-        padding-bottom: 20px;
         text-align: center;
-        background: linear-gradient(270deg, #FFFFFF 0%, #90EE90 50%, #FFFFFF 100%);
-        border-radius: 10px;
-        margin-bottom: 30px;
+        padding: 1rem;
+        border-bottom: 2px solid #90EE90;
+        margin-bottom: 2rem;
     }
     .metric-card {
         background-color: #FFFFFF;
@@ -35,11 +34,6 @@ st.markdown("""
     }
     .metric-card:hover {
         transform: translateY(-5px);
-    }
-    .gold-gradient {
-        background: linear-gradient(45deg, #FFD700, #FFF8DC);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
     }
     .status-indicator {
         height: 10px;
@@ -57,24 +51,15 @@ st.markdown("""
     .status-critical {
         background-color: #FF4444;
     }
-    .sidebar-info {
-        padding: 10px;
-        background-color: rgba(144, 238, 144, 0.1);
-        border-radius: 5px;
-        margin-top: 20px;
-    }
     </style>
 """, unsafe_allow_html=True)
 
-# Authentication check (placeholder)
+# Authentication placeholder (to be implemented)
 if 'authenticated' not in st.session_state:
     st.session_state.authenticated = False
 
 if not st.session_state.authenticated:
-    st.markdown("<div class='main-header'>", unsafe_allow_html=True)
-    st.title("🔒 DiploCyber Hub")
-    st.markdown("### Secure Intelligence Platform for IGOs")
-    st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown("<h1 class='main-header'>🔒 DiploCyber Hub</h1>", unsafe_allow_html=True)
     
     col1, col2 = st.columns(2)
     with col1:
@@ -84,15 +69,16 @@ if not st.session_state.authenticated:
     
     if st.button("Login"):
         # Add proper authentication later
-        st.session_state.authenticated = True
-        st.rerun()
+        if username and password:
+            st.session_state.authenticated = True
+            st.rerun()
+        else:
+            st.error("Please enter both username and password")
 
 else:
     # Main Dashboard
-    st.markdown("<div class='main-header'>", unsafe_allow_html=True)
-    st.title("🔒 DiploCyber Hub")
+    st.markdown("<h1 class='main-header'>🔒 DiploCyber Hub</h1>", unsafe_allow_html=True)
     st.markdown("### Real-time Security Intelligence Dashboard")
-    st.markdown("</div>", unsafe_allow_html=True)
 
     # Quick Stats Row
     col1, col2, col3, col4 = st.columns(4)
@@ -101,7 +87,7 @@ else:
         st.markdown("""
             <div class="metric-card">
                 <h3>Threat Level</h3>
-                <h2 class="gold-gradient">Elevated</h2>
+                <h2 style="color: #FFD700;">Elevated</h2>
                 <p>↑ from Moderate</p>
             </div>
         """, unsafe_allow_html=True)
@@ -118,26 +104,26 @@ else:
     with col3:
         st.markdown("""
             <div class="metric-card">
-                <h3>System Status</h3>
-                <h2>98.9%</h2>
-                <p>Uptime last 30 days</p>
+                <h3>Protected Assets</h3>
+                <h2>156</h2>
+                <p>All systems operational</p>
             </div>
         """, unsafe_allow_html=True)
     
     with col4:
         st.markdown("""
             <div class="metric-card">
-                <h3>Protected Assets</h3>
-                <h2>156</h2>
-                <p>All systems operational</p>
+                <h3>Security Score</h3>
+                <h2 style="color: #90EE90;">87/100</h2>
+                <p>↑ 5 points this week</p>
             </div>
         """, unsafe_allow_html=True)
 
-    # Threat Map and Activity
+    # Threat Map and Activity Feed
     col1, col2 = st.columns([2, 1])
     
     with col1:
-        st.markdown("### Global Threat Map")
+        st.markdown("### Threat Map")
         # Sample data for the map
         df_threats = pd.DataFrame({
             'lat': [-1.2921, -1.3, -1.25, -1.28],
@@ -166,13 +152,11 @@ else:
     
     with col2:
         st.markdown("### Live Activity")
-        
-        # Sample activity feed
         activities = [
-            {"time": "2 min ago", "event": "Suspicious login attempt detected", "severity": "critical"},
+            {"time": "2 min ago", "event": "Suspicious login attempt", "severity": "critical"},
             {"time": "5 min ago", "event": "Firewall rule updated", "severity": "warning"},
             {"time": "10 min ago", "event": "System backup completed", "severity": "active"},
-            {"time": "15 min ago", "event": "New security patch applied", "severity": "active"}
+            {"time": "15 min ago", "event": "New security patch", "severity": "active"}
         ]
         
         for activity in activities:
@@ -241,22 +225,13 @@ else:
         
         st.markdown("### System Status")
         st.markdown("""
-            <div class="sidebar-info">
+            <div style="padding: 10px; background-color: rgba(144, 238, 144, 0.1); border-radius: 5px;">
                 <p>🟢 Core Systems: Operational</p>
                 <p>🟢 Database: Connected</p>
                 <p>🟢 Security Monitoring: Active</p>
-                <p>Last Updated: {}}</p>
+                <p>Last Updated: {}</p>
             </div>
         """.format(datetime.now().strftime("%H:%M:%S")), unsafe_allow_html=True)
-        
-        st.markdown("### User Information")
-        st.markdown("""
-            <div class="sidebar-info">
-                <p><strong>Organization:</strong> UN Agency</p>
-                <p><strong>Role:</strong> Security Administrator</p>
-                <p><strong>Last Login:</strong> Today at 09:15</p>
-            </div>
-        """, unsafe_allow_html=True)
         
         if st.button("Logout"):
             st.session_state.authenticated = False
