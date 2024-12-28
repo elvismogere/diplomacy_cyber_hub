@@ -12,6 +12,13 @@ st.set_page_config(
 # Custom styling
 st.markdown("""
     <style>
+    .library-header {
+        font-size: 2rem;
+        color: #000000;
+        padding: 1rem 0;
+        border-bottom: 2px solid #90EE90;
+        margin-bottom: 2rem;
+    }
     .resource-card {
         background-color: #FFFFFF;
         border: 1px solid #90EE90;
@@ -19,101 +26,122 @@ st.markdown("""
         border-radius: 10px;
         box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
         margin: 10px 0;
+        transition: transform 0.3s ease;
+    }
+    .resource-card:hover {
+        transform: translateY(-5px);
+    }
+    .search-box {
+        background-color: #FFFFFF;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        border: 1px solid #90EE90;
     }
     .category-header {
         color: #000000;
         border-bottom: 2px solid #FFD700;
         padding-bottom: 10px;
-        margin-bottom: 20px;
+        margin: 20px 0;
     }
-    .search-box {
-        border: 2px solid #90EE90;
-        border-radius: 5px;
-        padding: 10px;
-    }
-    .document-link {
-        color: #000000;
-        text-decoration: none;
+    .tag {
+        background-color: rgba(144, 238, 144, 0.2);
         padding: 5px 10px;
-        border-radius: 5px;
-        transition: background-color 0.3s;
-    }
-    .document-link:hover {
-        background-color: #90EE90;
+        border-radius: 15px;
+        margin: 2px;
+        display: inline-block;
+        font-size: 0.8rem;
     }
     </style>
 """, unsafe_allow_html=True)
 
 # Header
-st.title("📚 Resource Library")
+st.markdown("<h1 class='library-header'>📚 Resource Library</h1>", unsafe_allow_html=True)
 st.markdown("### Comprehensive Cybersecurity Resources for IGOs")
 
-# Search functionality
+# Search and Filter Section
 st.markdown("<div class='search-box'>", unsafe_allow_html=True)
-search_term = st.text_input("Search Resources", placeholder="Enter keywords...")
+col1, col2 = st.columns([2, 1])
+with col1:
+    search_term = st.text_input("Search Resources", placeholder="Enter keywords...")
+with col2:
+    resource_type = st.selectbox(
+        "Resource Type",
+        ["All", "Policies", "Guidelines", "Templates", "Training"]
+    )
 st.markdown("</div>", unsafe_allow_html=True)
 
-# Tabs for different resource categories
+# Main content tabs
 tab1, tab2, tab3, tab4 = st.tabs([
-    "Policy Templates", 
+    "Security Policies", 
     "Best Practices", 
     "Training Materials",
-    "Emergency Procedures"
+    "Templates"
 ])
 
 # Sample resource data
-policy_documents = [
+policies = [
     {
-        "title": "Cybersecurity Policy Template for IGOs",
-        "type": "PDF",
-        "date": "2024-01-15",
-        "description": "Comprehensive policy template aligned with international standards",
-        "tags": ["policy", "template", "governance"]
+        "title": "Cybersecurity Policy Framework for IGOs",
+        "type": "Policy",
+        "date": "2024-02-15",
+        "description": "Comprehensive policy framework aligned with international standards",
+        "tags": ["policy", "framework", "compliance"],
+        "format": "PDF"
     },
     {
         "title": "Data Protection Guidelines",
-        "type": "PDF",
-        "date": "2024-01-10",
+        "type": "Policy",
+        "date": "2024-02-10",
         "description": "Guidelines for protecting sensitive diplomatic data",
-        "tags": ["data protection", "privacy", "guidelines"]
+        "tags": ["data protection", "privacy", "GDPR"],
+        "format": "PDF"
     },
     {
         "title": "Incident Response Protocol",
-        "type": "DOCX",
-        "date": "2024-01-05",
+        "type": "Policy",
+        "date": "2024-02-05",
         "description": "Standard operating procedures for cyber incident response",
-        "tags": ["incident response", "protocol", "emergency"]
+        "tags": ["incident response", "emergency", "procedures"],
+        "format": "DOCX"
     }
 ]
 
 best_practices = [
     {
-        "title": "Digital Diplomacy Security Guide",
-        "type": "PDF",
-        "date": "2024-01-20",
-        "description": "Best practices for securing diplomatic communications",
-        "tags": ["diplomacy", "security", "communications"]
+        "title": "Secure Communication Guidelines",
+        "type": "Guide",
+        "date": "2024-02-20",
+        "description": "Best practices for secure diplomatic communications",
+        "tags": ["communication", "security", "encryption"],
+        "format": "PDF"
     },
     {
-        "title": "Zero Trust Architecture Implementation",
-        "type": "PDF",
-        "date": "2024-01-18",
-        "description": "Guide to implementing zero trust security model",
-        "tags": ["zero trust", "architecture", "implementation"]
+        "title": "Remote Work Security Guide",
+        "type": "Guide",
+        "date": "2024-02-18",
+        "description": "Security guidelines for remote diplomatic operations",
+        "tags": ["remote work", "VPN", "security"],
+        "format": "PDF"
     }
 ]
 
 with tab1:
-    st.markdown("<h3 class='category-header'>Policy Templates</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 class='category-header'>Security Policies</h3>", unsafe_allow_html=True)
     
-    for doc in policy_documents:
-        if not search_term or any(term.lower() in doc['title'].lower() or term.lower() in doc['description'].lower() 
-                                 for term in search_term.split()):
+    for policy in policies:
+        if (search_term.lower() in policy['title'].lower() or 
+            search_term.lower() in policy['description'].lower() or 
+            any(search_term.lower() in tag for tag in policy['tags'])):
+            
             st.markdown(f"""
                 <div class='resource-card'>
-                    <h4>{doc['title']} <span style='color: #90EE90'>({doc['type']})</span></h4>
-                    <p>{doc['description']}</p>
-                    <p><small>Last updated: {doc['date']}</small></p>
+                    <h4>{policy['title']} <span style='color: #90EE90'>({policy['format']})</span></h4>
+                    <p>{policy['description']}</p>
+                    <p><small>Last updated: {policy['date']}</small></p>
+                    <p>
+                        {' '.join([f"<span class='tag'>{tag}</span>" for tag in policy['tags']])}
+                    </p>
                     <button style='background-color: #000000; color: white; border: none; padding: 5px 15px; 
                             border-radius: 5px; cursor: pointer;'>Download</button>
                 </div>
@@ -123,13 +151,18 @@ with tab2:
     st.markdown("<h3 class='category-header'>Best Practices</h3>", unsafe_allow_html=True)
     
     for practice in best_practices:
-        if not search_term or any(term.lower() in practice['title'].lower() or term.lower() in practice['description'].lower() 
-                                 for term in search_term.split()):
+        if (search_term.lower() in practice['title'].lower() or 
+            search_term.lower() in practice['description'].lower() or 
+            any(search_term.lower() in tag for tag in practice['tags'])):
+            
             st.markdown(f"""
                 <div class='resource-card'>
-                    <h4>{practice['title']} <span style='color: #90EE90'>({practice['type']})</span></h4>
+                    <h4>{practice['title']} <span style='color: #90EE90'>({practice['format']})</span></h4>
                     <p>{practice['description']}</p>
                     <p><small>Last updated: {practice['date']}</small></p>
+                    <p>
+                        {' '.join([f"<span class='tag'>{tag}</span>" for tag in practice['tags']])}
+                    </p>
                     <button style='background-color: #000000; color: white; border: none; padding: 5px 15px; 
                             border-radius: 5px; cursor: pointer;'>View Guide</button>
                 </div>
@@ -138,11 +171,11 @@ with tab2:
 with tab3:
     st.markdown("<h3 class='category-header'>Training Materials</h3>", unsafe_allow_html=True)
     
-    # Interactive Training Modules
+    # Training Modules Section
     st.markdown("""
         <div class='resource-card'>
             <h4>Cybersecurity Fundamentals for Diplomatic Staff</h4>
-            <p>Interactive training module covering basic cybersecurity concepts</p>
+            <p>Interactive training module covering essential cybersecurity concepts</p>
             <div style='background-color: #f0f0f0; padding: 10px; border-radius: 5px; margin: 10px 0;'>
                 <p>Module Progress: 60%</p>
                 <div style='background-color: #90EE90; width: 60%; height: 10px; border-radius: 5px;'></div>
@@ -150,45 +183,73 @@ with tab3:
             <button style='background-color: #000000; color: white; border: none; padding: 5px 15px; 
                     border-radius: 5px; cursor: pointer;'>Continue Training</button>
         </div>
-    """, unsafe_allow_html=True)
-
-with tab4:
-    st.markdown("<h3 class='category-header'>Emergency Procedures</h3>", unsafe_allow_html=True)
-    
-    # Emergency Response Procedures
-    st.markdown("""
+        
         <div class='resource-card'>
-            <h4>Emergency Response Playbook</h4>
-            <p>Step-by-step procedures for handling cyber incidents</p>
-            <ul>
-                <li>Incident Classification Guidelines</li>
-                <li>Communication Templates</li>
-                <li>Response Team Contact Information</li>
-                <li>Recovery Procedures</li>
-            </ul>
+            <h4>Advanced Security Protocols</h4>
+            <p>Comprehensive training on implementing security protocols</p>
+            <div style='background-color: #f0f0f0; padding: 10px; border-radius: 5px; margin: 10px 0;'>
+                <p>Module Progress: 30%</p>
+                <div style='background-color: #90EE90; width: 30%; height: 10px; border-radius: 5px;'></div>
+            </div>
             <button style='background-color: #000000; color: white; border: none; padding: 5px 15px; 
-                    border-radius: 5px; cursor: pointer;'>Access Playbook</button>
+                    border-radius: 5px; cursor: pointer;'>Start Module</button>
         </div>
     """, unsafe_allow_html=True)
 
-# Quick Access Section
-st.sidebar.markdown("### Quick Access")
-st.sidebar.markdown("""
-- 📋 Latest Policies
-- 📊 Security Guidelines
-- 📚 Training Modules
-- 🚨 Emergency Contacts
-""")
+with tab4:
+    st.markdown("<h3 class='category-header'>Templates</h3>", unsafe_allow_html=True)
+    
+    templates = [
+        {
+            "title": "Incident Response Template",
+            "description": "Standardized template for documenting and responding to security incidents",
+            "format": "DOCX",
+            "category": "Security"
+        },
+        {
+            "title": "Risk Assessment Worksheet",
+            "description": "Template for conducting comprehensive risk assessments",
+            "format": "XLSX",
+            "category": "Risk Management"
+        },
+        {
+            "title": "Security Audit Checklist",
+            "description": "Detailed checklist for security audits and assessments",
+            "format": "PDF",
+            "category": "Audit"
+        }
+    ]
+    
+    for template in templates:
+        st.markdown(f"""
+            <div class='resource-card'>
+                <h4>{template['title']} <span style='color: #90EE90'>({template['format']})</span></h4>
+                <p>{template['description']}</p>
+                <p><span class='tag'>{template['category']}</span></p>
+                <button style='background-color: #000000; color: white; border: none; padding: 5px 15px; 
+                        border-radius: 5px; cursor: pointer;'>Download Template</button>
+            </div>
+        """, unsafe_allow_html=True)
 
-# Resource Statistics
-st.sidebar.markdown("### Resource Statistics")
-st.sidebar.markdown("""
-- Total Documents: 45
-- Updated this month: 12
-- Most accessed: Security Guidelines
-""")
-
-# Download All Resources Option
-st.sidebar.markdown("### Bulk Download")
-if st.sidebar.button("Download All Resources"):
-    st.sidebar.success("Preparing download package...")
+# Sidebar
+with st.sidebar:
+    st.markdown("### Quick Access")
+    st.markdown("""
+        - 📋 Latest Policies
+        - 📊 Security Guidelines
+        - 📚 Training Modules
+        - 🔍 Search All Resources
+    """)
+    
+    st.markdown("### Resource Statistics")
+    st.markdown("""
+        <div style='padding: 10px; background-color: rgba(144, 238, 144, 0.1); border-radius: 5px;'>
+            <p>Total Resources: 45</p>
+            <p>Updated this month: 12</p>
+            <p>Most accessed: Security Guidelines</p>
+            <p>Last updated: {}</p>
+        </div>
+    """.format(datetime.now().strftime("%Y-%m-%d")), unsafe_allow_html=True)
+    
+    if st.button("Submit New Resource"):
+        st.info("Resource submission form will open in a new window")
