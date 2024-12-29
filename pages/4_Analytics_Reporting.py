@@ -2,8 +2,8 @@ import streamlit as st
 import plotly.graph_objects as go
 import plotly.express as px
 import pandas as pd
-from datetime import datetime, timedelta
 import numpy as np
+from datetime import datetime, timedelta
 
 # Page configuration
 st.set_page_config(
@@ -15,6 +15,13 @@ st.set_page_config(
 # Custom styling
 st.markdown("""
     <style>
+    .analytics-header {
+        font-size: 2rem;
+        color: #000000;
+        padding: 1rem 0;
+        border-bottom: 2px solid #90EE90;
+        margin-bottom: 2rem;
+    }
     .analytics-card {
         background-color: #FFFFFF;
         border: 1px solid #90EE90;
@@ -22,31 +29,34 @@ st.markdown("""
         border-radius: 10px;
         box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
         margin: 10px 0;
+        transition: transform 0.3s ease;
     }
-    .stat-card {
-        text-align: center;
-        padding: 20px;
-        background-color: white;
-        border-radius: 10px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    .analytics-card:hover {
+        transform: translateY(-5px);
     }
-    .gold-text {
-        color: #FFD700;
+    .metric-row {
+        display: flex;
+        justify-content: space-between;
+        margin: 10px 0;
     }
-    .green-text {
+    .trend-up {
         color: #90EE90;
     }
-    .report-section {
-        margin-top: 30px;
-        padding: 20px;
-        background-color: #f8f9fa;
+    .trend-down {
+        color: #FFD700;
+    }
+    .chart-container {
+        padding: 15px;
         border-radius: 10px;
+        background-color: white;
+        margin: 10px 0;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
     </style>
 """, unsafe_allow_html=True)
 
 # Header
-st.title("📊 Analytics & Reporting")
+st.markdown("<h1 class='analytics-header'>📊 Analytics & Reporting</h1>", unsafe_allow_html=True)
 st.markdown("### Comprehensive Security Analytics Dashboard")
 
 # Date Range Selector
@@ -61,94 +71,74 @@ metrics_col1, metrics_col2, metrics_col3, metrics_col4 = st.columns(4)
 
 with metrics_col1:
     st.markdown("""
-        <div class="stat-card">
+        <div class="analytics-card">
             <h3>Total Incidents</h3>
-            <h2 class="gold-text">247</h2>
-            <p>↑ 12% from last month</p>
+            <h2 style="color: #FFD700;">247</h2>
+            <p class="trend-up">↑ 12% from last month</p>
         </div>
     """, unsafe_allow_html=True)
 
 with metrics_col2:
     st.markdown("""
-        <div class="stat-card">
+        <div class="analytics-card">
             <h3>Resolution Rate</h3>
-            <h2 class="green-text">94%</h2>
-            <p>↑ 3% improvement</p>
+            <h2 style="color: #90EE90;">94%</h2>
+            <p class="trend-up">↑ 3% improvement</p>
         </div>
     """, unsafe_allow_html=True)
 
 with metrics_col3:
     st.markdown("""
-        <div class="stat-card">
+        <div class="analytics-card">
             <h3>Avg Response Time</h3>
-            <h2 class="gold-text">45min</h2>
-            <p>↓ 15% faster</p>
+            <h2 style="color: #FFD700;">45min</h2>
+            <p class="trend-down">↓ 15% faster</p>
         </div>
     """, unsafe_allow_html=True)
 
 with metrics_col4:
     st.markdown("""
-        <div class="stat-card">
+        <div class="analytics-card">
             <h3>Security Score</h3>
-            <h2 class="green-text">87/100</h2>
-            <p>↑ 5 points</p>
+            <h2 style="color: #90EE90;">87/100</h2>
+            <p class="trend-up">↑ 5 points</p>
         </div>
     """, unsafe_allow_html=True)
 
-# Threat Distribution Analysis
-st.markdown("### Threat Distribution Analysis")
+# Threat Analysis Section
+st.markdown("### Threat Analysis")
 
-# Sample data for threat distribution
-threat_types = ['Phishing', 'Malware', 'DDoS', 'Unauthorized Access', 'Data Breach']
-threat_counts = [45, 32, 28, 20, 15]
-
-fig_threats = go.Figure(data=[
-    go.Bar(
-        x=threat_types,
-        y=threat_counts,
-        marker_color=['#FFD700', '#90EE90', '#000000', '#FFD700', '#90EE90']
-    )
-])
-
-fig_threats.update_layout(
-    title='Threat Distribution by Type',
-    xaxis_title='Threat Type',
-    yaxis_title='Number of Incidents',
-    height=400
-)
-
-st.plotly_chart(fig_threats, use_container_width=True)
-
-# Temporal Analysis
-st.markdown("### Temporal Analysis")
-
-# Generate sample temporal data
+# Create sample data for threats over time
 dates = pd.date_range(start=start_date, end=end_date, freq='D')
-incidents = np.random.randint(5, 15, size=len(dates))
-resolved = np.random.randint(3, 12, size=len(dates))
+threat_data = pd.DataFrame({
+    'Date': dates,
+    'Phishing': np.random.randint(5, 15, size=len(dates)),
+    'Malware': np.random.randint(3, 10, size=len(dates)),
+    'DDoS': np.random.randint(1, 5, size=len(dates)),
+    'Unauthorized_Access': np.random.randint(2, 8, size=len(dates))
+})
 
-fig_temporal = go.Figure()
-fig_temporal.add_trace(go.Scatter(
-    x=dates,
-    y=incidents,
-    name='Incidents',
-    line=dict(color='#FFD700', width=2)
-))
-fig_temporal.add_trace(go.Scatter(
-    x=dates,
-    y=resolved,
-    name='Resolved',
-    line=dict(color='#90EE90', width=2)
-))
+# Create stacked area chart
+fig = go.Figure()
 
-fig_temporal.update_layout(
-    title='Incident Timeline',
+for column in ['Phishing', 'Malware', 'DDoS', 'Unauthorized_Access']:
+    fig.add_trace(go.Scatter(
+        x=threat_data['Date'],
+        y=threat_data[column],
+        name=column,
+        stackgroup='one',
+        fill='tonexty'
+    ))
+
+fig.update_layout(
+    title='Threat Distribution Over Time',
     xaxis_title='Date',
-    yaxis_title='Number of Incidents',
-    height=400
+    yaxis_title='Number of Threats',
+    height=400,
+    showlegend=True
 )
 
-st.plotly_chart(fig_temporal, use_container_width=True)
+st.plotly_chart(fig, use_container_width=True)
 
 # Geographic Distribution
 st.markdown("### Geographic Distribution of Threats")
@@ -173,6 +163,74 @@ fig_geo = px.density_mapbox(
 )
 
 st.plotly_chart(fig_geo, use_container_width=True)
+
+# Security Metrics
+st.markdown("### Security Metrics")
+
+col1, col2 = st.columns(2)
+
+with col1:
+    # Vulnerability Status
+    labels = ['Resolved', 'In Progress', 'Open']
+    values = [65, 25, 10]
+    
+    fig_vuln = go.Figure(data=[go.Pie(
+        labels=labels,
+        values=values,
+        hole=.3,
+        marker_colors=['#90EE90', '#FFD700', '#FF0000']
+    )])
+    
+    fig_vuln.update_layout(
+        title='Vulnerability Status Distribution',
+        height=300
+    )
+    
+    st.plotly_chart(fig_vuln, use_container_width=True)
+
+with col2:
+    # Incident Response Times
+    response_times = np.random.normal(45, 15, 100)
+    
+    fig_response = go.Figure(data=[go.Histogram(
+        x=response_times,
+        nbinsx=20,
+        marker_color='#90EE90'
+    )])
+    
+    fig_response.update_layout(
+        title='Incident Response Time Distribution (minutes)',
+        xaxis_title='Response Time',
+        yaxis_title='Frequency',
+        height=300
+    )
+    
+    st.plotly_chart(fig_response, use_container_width=True)
+
+# Compliance Metrics
+st.markdown("### Compliance & Policy Metrics")
+
+compliance_data = {
+    'Category': ['Data Protection', 'Access Control', 'Incident Response', 'Security Training', 'Network Security'],
+    'Score': [92, 88, 95, 78, 85]
+}
+
+fig_compliance = go.Figure(data=[
+    go.Bar(
+        x=compliance_data['Category'],
+        y=compliance_data['Score'],
+        marker_color=['#90EE90' if score >= 90 else '#FFD700' if score >= 80 else '#FF0000' 
+                     for score in compliance_data['Score']]
+    )
+])
+
+fig_compliance.update_layout(
+    title='Compliance Scores by Category',
+    yaxis_title='Compliance Score (%)',
+    height=300
+)
+
+st.plotly_chart(fig_compliance, use_container_width=True)
 
 # Report Generation Section
 st.markdown("### Report Generation")
@@ -217,34 +275,38 @@ with report_col2:
     if st.button("Schedule Reports"):
         st.success("Report schedule configured successfully!")
 
-# Export Options
-st.sidebar.markdown("### Export Options")
-export_format = st.sidebar.selectbox(
-    "Export Format",
-    ["PDF", "Excel", "CSV", "JSON"]
-)
-
-if st.sidebar.button("Export Analytics Data"):
-    st.sidebar.success(f"Exporting data in {export_format} format...")
-
-# Filters
-st.sidebar.markdown("### Analysis Filters")
-st.sidebar.multiselect(
-    "Organization Type",
-    ["UN Agencies", "Regional Bodies", "Diplomatic Missions", "International NGOs"],
-    default=["UN Agencies"]
-)
-
-st.sidebar.multiselect(
-    "Threat Categories",
-    ["Cyber Attacks", "Data Breaches", "Policy Violations", "System Vulnerabilities"],
-    default=["Cyber Attacks"]
-)
-
-# Advanced Analytics
-st.sidebar.markdown("### Advanced Analytics")
-if st.sidebar.button("Run Predictive Analysis"):
-    st.sidebar.info("Analyzing trends and generating predictions...")
-
-if st.sidebar.button("Generate Risk Score"):
-    st.sidebar.success("Calculating organizational risk score...")
+# Sidebar
+with st.sidebar:
+    st.markdown("### Analytics Controls")
+    
+    # Filters
+    st.markdown("#### Data Filters")
+    st.multiselect(
+        "Organization Type",
+        ["UN Agencies", "Regional Bodies", "Diplomatic Missions", "International NGOs"],
+        default=["UN Agencies"]
+    )
+    
+    st.multiselect(
+        "Threat Categories",
+        ["Cyber Attacks", "Data Breaches", "Policy Violations", "System Vulnerabilities"],
+        default=["Cyber Attacks"]
+    )
+    
+    # Export Options
+    st.markdown("#### Export Options")
+    export_format = st.selectbox(
+        "Export Format",
+        ["PDF", "Excel", "CSV", "JSON"]
+    )
+    
+    if st.button("Export Analytics"):
+        st.success(f"Exporting data in {export_format} format...")
+    
+    # Advanced Analytics
+    st.markdown("#### Advanced Analytics")
+    if st.button("Run Predictive Analysis"):
+        st.info("Analyzing trends and generating predictions...")
+    
+    if st.button("Generate Risk Score"):
+        st.success("Calculating organizational risk score...")
