@@ -12,6 +12,13 @@ st.set_page_config(
 # Custom styling
 st.markdown("""
     <style>
+    .settings-header {
+        font-size: 2rem;
+        color: #000000;
+        padding: 1rem 0;
+        border-bottom: 2px solid #90EE90;
+        margin-bottom: 2rem;
+    }
     .settings-card {
         background-color: #FFFFFF;
         border: 1px solid #90EE90;
@@ -20,30 +27,28 @@ st.markdown("""
         box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
         margin: 10px 0;
     }
-    .section-header {
+    .settings-section {
+        margin-top: 20px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    .save-button {
+        background-color: #90EE90;
         color: #000000;
-        border-bottom: 2px solid #FFD700;
-        padding-bottom: 10px;
-        margin-bottom: 20px;
-    }
-    .success-message {
-        color: #90EE90;
-        padding: 10px;
+        padding: 10px 20px;
         border-radius: 5px;
-        margin: 10px 0;
+        border: none;
+        cursor: pointer;
+        margin-top: 10px;
     }
-    .warning-message {
-        color: #FFD700;
-        padding: 10px;
-        border-radius: 5px;
-        margin: 10px 0;
+    .save-button:hover {
+        background-color: #7BC47B;
     }
     </style>
 """, unsafe_allow_html=True)
 
 # Header
-st.title("⚙️ Settings")
-st.markdown("### System Configuration and Preferences")
+st.markdown("<h1 class='settings-header'>⚙️ Settings</h1>", unsafe_allow_html=True)
 
 # Create tabs for different settings categories
 tab1, tab2, tab3, tab4 = st.tabs([
@@ -54,7 +59,7 @@ tab1, tab2, tab3, tab4 = st.tabs([
 ])
 
 with tab1:
-    st.markdown("<h3 class='section-header'>Organization Profile</h3>", unsafe_allow_html=True)
+    st.markdown("<h3>Organization Profile</h3>", unsafe_allow_html=True)
     
     col1, col2 = st.columns(2)
     with col1:
@@ -74,11 +79,11 @@ with tab1:
         phone = st.text_input("Phone Number")
         st.markdown("</div>", unsafe_allow_html=True)
     
-    if st.button("Update Profile"):
+    if st.button("Update Profile", key="profile"):
         st.success("Organization profile updated successfully!")
 
 with tab2:
-    st.markdown("<h3 class='section-header'>Security Settings</h3>", unsafe_allow_html=True)
+    st.markdown("<h3>Security Settings</h3>", unsafe_allow_html=True)
     
     # Authentication Settings
     st.markdown("<div class='settings-card'>", unsafe_allow_html=True)
@@ -102,11 +107,11 @@ with tab2:
     allowed_domains = st.text_input("Allowed Email Domains (comma-separated)")
     st.markdown("</div>", unsafe_allow_html=True)
     
-    if st.button("Save Security Settings"):
+    if st.button("Save Security Settings", key="security"):
         st.success("Security settings updated successfully!")
 
 with tab3:
-    st.markdown("<h3 class='section-header'>Notification Preferences</h3>", unsafe_allow_html=True)
+    st.markdown("<h3>Notification Preferences</h3>", unsafe_allow_html=True)
     
     st.markdown("<div class='settings-card'>", unsafe_allow_html=True)
     st.markdown("#### Alert Settings")
@@ -137,11 +142,11 @@ with tab3:
         st.info("Custom alert rule configuration will be available in the next update.")
     st.markdown("</div>", unsafe_allow_html=True)
     
-    if st.button("Save Notification Settings"):
+    if st.button("Save Notification Settings", key="notifications"):
         st.success("Notification preferences updated successfully!")
 
 with tab4:
-    st.markdown("<h3 class='section-header'>System Configuration</h3>", unsafe_allow_html=True)
+    st.markdown("<h3>System Configuration</h3>", unsafe_allow_html=True)
     
     # Data Management
     st.markdown("<div class='settings-card'>", unsafe_allow_html=True)
@@ -197,11 +202,3 @@ with st.sidebar:
     st.markdown("### System Status")
     st.info("System Version: 1.0.0")
     st.info("Last Updated: " + datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-    
-    # Support Section
-    st.markdown("### Support")
-    st.markdown("""
-        Need help? Contact support:
-        - 📧 support@diplocyber.com
-        - 📞 +254 XXX XXX XXX
-    """)
