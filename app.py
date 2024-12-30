@@ -6,35 +6,71 @@ from datetime import datetime, timedelta
 
 # Page configuration
 st.set_page_config(
-    page_title="DiploCyber Hub | IGO Security Monitor",
+    page_title="DiploCyber Hub | Home",
     page_icon="🔒",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="expanded",
+    menu_items={
+        'Get Help': None,
+        'Report a bug': None,
+        'About': 'DiploCyber Hub - Secure Intelligence Platform for IGOs'
+    }
 )
 
-# Custom styling
+# Custom styling with dark mode support
 st.markdown("""
     <style>
-    .main-header {
-        font-size: 2.5rem;
-        color: #000000;
-        text-align: center;
-        padding: 1rem;
-        border-bottom: 2px solid #90EE90;
-        margin-bottom: 2rem;
+    /* Dark mode toggle button */
+    .dark-mode-toggle {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        z-index: 999;
+        background-color: #000000;
+        color: #FFFFFF;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: all 0.3s ease;
     }
+    
+    /* Global theme consistency */
+    .main {
+        background-color: var(--background-color);
+        color: var(--text-color);
+        font-family: 'Helvetica Neue', sans-serif;
+    }
+    
+    /* Main header styling */
+    .main-header {
+        color: #000000;
+        font-size: 2.5rem;
+        text-align: center;
+        padding: 1.5rem;
+        background: linear-gradient(to right, #FFFFFF, #90EE90, #FFFFFF);
+        border-radius: 10px;
+        margin-bottom: 2rem;
+        font-weight: 600;
+    }
+    
+    /* Card styling */
     .metric-card {
-        background-color: #FFFFFF;
-        border: 1px solid #90EE90;
+        background-color: var(--card-background);
+        border: 1px solid var(--border-color);
         padding: 20px;
         border-radius: 10px;
         box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
         margin: 10px 0;
-        transition: transform 0.3s ease;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
+    
     .metric-card:hover {
         transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
     }
+    
+    /* Status indicators */
     .status-indicator {
         height: 10px;
         width: 10px;
@@ -42,24 +78,98 @@ st.markdown("""
         display: inline-block;
         margin-right: 5px;
     }
+    
     .status-active {
         background-color: #90EE90;
+        animation: pulse 2s infinite;
     }
+    
     .status-warning {
         background-color: #FFD700;
     }
+    
     .status-critical {
         background-color: #FF4444;
+    }
+    
+    @keyframes pulse {
+        0% { opacity: 1; }
+        50% { opacity: 0.5; }
+        100% { opacity: 1; }
+    }
+    
+    /* Chart containers */
+    .chart-container {
+        background-color: var(--card-background);
+        border-radius: 10px;
+        padding: 15px;
+        margin: 10px 0;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    /* Dark mode styles */
+    [data-theme="dark"] {
+        --background-color: #1E1E1E;
+        --text-color: #FFFFFF;
+        --card-background: #2D2D2D;
+        --border-color: #404040;
+    }
+    
+    /* Light mode styles */
+    [data-theme="light"] {
+        --background-color: #FFFFFF;
+        --text-color: #000000;
+        --card-background: #FFFFFF;
+        --border-color: #90EE90;
+    }
+    
+    /* Sidebar styling */
+    .css-1d391kg {
+        background-color: var(--background-color);
+    }
+    
+    /* Button styling */
+    .stButton>button {
+        background-color: #000000;
+        color: #FFFFFF;
+        border-radius: 20px;
+        padding: 10px 20px;
+        transition: all 0.3s ease;
+    }
+    
+    .stButton>button:hover {
+        background-color: #90EE90;
+        color: #000000;
+        transform: translateY(-2px);
     }
     </style>
 """, unsafe_allow_html=True)
 
-# Authentication placeholder (to be implemented)
+# Initialize theme state
+if 'theme' not in st.session_state:
+    st.session_state.theme = "light"
+
+# Theme toggle in header
+col1, col2 = st.columns([6,1])
+with col2:
+    if st.button("🌓 Toggle Theme"):
+        st.session_state.theme = "dark" if st.session_state.theme == "light" else "light"
+        st.rerun()
+
+# Apply theme
+st.markdown(f"""
+    <script>
+        document.body.setAttribute('data-theme', '{st.session_state.theme}');
+    </script>
+    """, unsafe_allow_html=True)
+
+# Authentication state
 if 'authenticated' not in st.session_state:
     st.session_state.authenticated = False
 
 if not st.session_state.authenticated:
     st.markdown("<h1 class='main-header'>🔒 DiploCyber Hub</h1>", unsafe_allow_html=True)
+    st.markdown("### Secure Intelligence Platform for IGOs")
     
     col1, col2 = st.columns(2)
     with col1:
@@ -68,7 +178,6 @@ if not st.session_state.authenticated:
         password = st.text_input("Password", type="password")
     
     if st.button("Login"):
-        # Add proper authentication later
         if username and password:
             st.session_state.authenticated = True
             st.rerun()
@@ -124,7 +233,6 @@ else:
     
     with col1:
         st.markdown("### Threat Map")
-        # Sample data for the map
         df_threats = pd.DataFrame({
             'lat': [-1.2921, -1.3, -1.25, -1.28],
             'lon': [36.8219, 36.85, 36.82, 36.81],
@@ -173,7 +281,6 @@ else:
     tab1, tab2 = st.tabs(["Threat Distribution", "Timeline Analysis"])
     
     with tab1:
-        # Sample threat distribution data
         threat_types = ['Phishing', 'Malware', 'DDoS', 'Unauthorized Access', 'Data Breach']
         threat_counts = [45, 32, 28, 20, 15]
 
@@ -193,7 +300,6 @@ else:
         st.plotly_chart(fig, use_container_width=True)
     
     with tab2:
-        # Generate sample timeline data
         dates = pd.date_range(start='2024-01-01', end='2024-02-29', freq='D')
         incidents = [abs(10 + (i % 5) + (i % 3)) for i in range(len(dates))]
 
