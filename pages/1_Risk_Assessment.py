@@ -5,47 +5,146 @@ from datetime import datetime
 
 # Page config
 st.set_page_config(
-    page_title="Risk Assessment | DiploCyber Hub",
+    page_title="DiploCyber Hub | Risk Assessment",
     page_icon="🎯",
-    layout="wide"
+    layout="wide",
+    menu_items={
+        'Get Help': None,
+        'Report a bug': None,
+        'About': 'DiploCyber Hub - Risk Assessment Module'
+    }
 )
 
-# Custom styling
+# Custom styling with dark mode support
 st.markdown("""
     <style>
-    .risk-header {
-        font-size: 2rem;
-        color: #000000;
-        padding: 1rem 0;
-        border-bottom: 2px solid #90EE90;
-        margin-bottom: 2rem;
+    /* Global theme consistency */
+    .main {
+        background-color: var(--background-color);
+        color: var(--text-color);
+        font-family: 'Helvetica Neue', sans-serif;
     }
+    
+    /* Risk Assessment Header */
+    .risk-header {
+        color: #000000;
+        font-size: 2.5rem;
+        text-align: center;
+        padding: 1.5rem;
+        background: linear-gradient(to right, #FFFFFF, #90EE90, #FFFFFF);
+        border-radius: 10px;
+        margin-bottom: 2rem;
+        font-weight: 600;
+    }
+    
+    /* Card styling */
     .risk-card {
-        background-color: #FFFFFF;
-        border: 1px solid #90EE90;
+        background-color: var(--card-background);
+        border: 1px solid var(--border-color);
         padding: 20px;
         border-radius: 10px;
         box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
         margin: 10px 0;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
+    
+    .risk-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    
+    /* Risk level indicators */
     .risk-high {
         border-left: 4px solid #FFD700;
     }
+    
     .risk-medium {
         border-left: 4px solid #90EE90;
     }
+    
     .risk-low {
         border-left: 4px solid #000000;
     }
-    .recommendation-card {
-        background-color: #FFFFFF;
-        border: 1px solid #90EE90;
-        padding: 15px;
+    
+    /* Form styling */
+    .stTextInput>div>div>input {
+        border-radius: 5px;
+        border: 1px solid var(--border-color);
+    }
+    
+    .stSelectbox>div>div>div {
+        border-radius: 5px;
+        border: 1px solid var(--border-color);
+    }
+    
+    /* Button styling */
+    .stButton>button {
+        background-color: #000000;
+        color: #FFFFFF;
+        border-radius: 20px;
+        padding: 10px 20px;
+        transition: all 0.3s ease;
+    }
+    
+    .stButton>button:hover {
+        background-color: #90EE90;
+        color: #000000;
+        transform: translateY(-2px);
+    }
+    
+    /* Dark mode styles */
+    [data-theme="dark"] {
+        --background-color: #1E1E1E;
+        --text-color: #FFFFFF;
+        --card-background: #2D2D2D;
+        --border-color: #404040;
+    }
+    
+    /* Light mode styles */
+    [data-theme="light"] {
+        --background-color: #FFFFFF;
+        --text-color: #000000;
+        --card-background: #FFFFFF;
+        --border-color: #90EE90;
+    }
+    
+    /* Chart containers */
+    .chart-container {
+        background-color: var(--card-background);
         border-radius: 10px;
+        padding: 15px;
         margin: 10px 0;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    /* Section headers */
+    .section-header {
+        color: #000000;
+        border-bottom: 2px solid #90EE90;
+        padding-bottom: 10px;
+        margin: 20px 0;
+        font-weight: 600;
     }
     </style>
 """, unsafe_allow_html=True)
+
+# Initialize theme state
+if 'theme' not in st.session_state:
+    st.session_state.theme = "light"
+
+# Theme toggle in header
+col1, col2 = st.columns([6,1])
+with col2:
+    if st.button("🌓 Toggle Theme"):
+        st.session_state.theme = "dark" if st.session_state.theme == "light" else "light"
+        st.rerun()
+
+# Apply theme
+st.markdown(f"""
+    <script>
+        document.body.setAttribute('data-theme', '{st.session_state.theme}');
+    </script>
+    """, unsafe_allow_html=True)
 
 # Header
 st.markdown("<h1 class='risk-header'>🎯 Risk Assessment</h1>", unsafe_allow_html=True)
@@ -54,7 +153,7 @@ st.markdown("<h1 class='risk-header'>🎯 Risk Assessment</h1>", unsafe_allow_ht
 tab1, tab2, tab3 = st.tabs(["Quick Assessment", "Detailed Analysis", "Risk Matrix"])
 
 with tab1:
-    st.markdown("### Quick Risk Assessment")
+    st.markdown("<h3 class='section-header'>Quick Risk Assessment</h3>", unsafe_allow_html=True)
     
     # Organization Info
     col1, col2 = st.columns(2)
@@ -66,7 +165,7 @@ with tab1:
         assessor_name = st.text_input("Assessor Name")
 
     # Risk Categories
-    st.markdown("### Risk Categories")
+    st.markdown("<h3 class='section-header'>Risk Categories</h3>", unsafe_allow_html=True)
     
     # Technical Controls
     st.markdown("#### 1. Technical Controls")
@@ -131,7 +230,7 @@ with tab1:
         total_score = (tech_score + policy_score + human_score) / 3
         
         # Display results
-        st.markdown("### Assessment Results")
+        st.markdown("<h3 class='section-header'>Assessment Results</h3>", unsafe_allow_html=True)
         
         col1, col2 = st.columns(2)
         with col1:
@@ -168,9 +267,8 @@ with tab1:
                     </ul>
                 </div>
             """, unsafe_allow_html=True)
-
 with tab2:
-    st.markdown("### Detailed Risk Analysis")
+    st.markdown("<h3 class='section-header'>Detailed Risk Analysis</h3>", unsafe_allow_html=True)
     
     # Historical Risk Trends
     st.markdown("#### Historical Risk Trends")
@@ -191,7 +289,10 @@ with tab2:
     fig.update_layout(
         title='Risk Score Trend',
         yaxis_title='Risk Score',
-        height=400
+        height=400,
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        font=dict(color='#000000')
     )
 
     st.plotly_chart(fig, use_container_width=True)
@@ -200,23 +301,25 @@ with tab2:
     st.markdown("#### Vulnerability Assessment")
     
     vulnerabilities = [
-        {"type": "Network", "severity": "High", "status": "Open"},
-        {"type": "Application", "severity": "Medium", "status": "In Progress"},
-        {"type": "Physical", "severity": "Low", "status": "Resolved"},
+        {"type": "Network Security", "severity": "High", "status": "Open", "description": "Outdated firewall configurations"},
+        {"type": "Access Control", "severity": "Medium", "status": "In Progress", "description": "Weak password policies"},
+        {"type": "Data Protection", "severity": "High", "status": "Open", "description": "Unencrypted data storage"},
+        {"type": "Physical Security", "severity": "Low", "status": "Resolved", "description": "Server room access logs"},
     ]
 
     for vuln in vulnerabilities:
         severity_class = f"risk-{vuln['severity'].lower()}"
         st.markdown(f"""
             <div class="risk-card {severity_class}">
-                <h4>{vuln['type']} Vulnerability</h4>
-                <p>Severity: {vuln['severity']}</p>
-                <p>Status: {vuln['status']}</p>
+                <h4>{vuln['type']}</h4>
+                <p><strong>Severity:</strong> {vuln['severity']}</p>
+                <p><strong>Status:</strong> {vuln['status']}</p>
+                <p><strong>Description:</strong> {vuln['description']}</p>
             </div>
         """, unsafe_allow_html=True)
 
 with tab3:
-    st.markdown("### Risk Matrix")
+    st.markdown("<h3 class='section-header'>Risk Matrix</h3>", unsafe_allow_html=True)
     
     # Create risk matrix
     impact_levels = ['Low', 'Medium', 'High', 'Critical']
@@ -250,9 +353,10 @@ with tab3:
         y=df['Likelihood'],
         mode='markers',
         marker=dict(
-            size=40,
+            size=45,
             color=df['Color'],
-            symbol='square'
+            symbol='square',
+            line=dict(color='#000000', width=1)
         ),
         text=df['Risk_Score'],
         textposition="middle center",
@@ -267,10 +371,23 @@ with tab3:
         xaxis_title='Impact',
         yaxis_title='Likelihood',
         height=600,
-        showlegend=False
+        showlegend=False,
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        font=dict(color='#000000')
     )
 
     st.plotly_chart(fig, use_container_width=True)
+
+    # Risk Matrix Legend
+    st.markdown("""
+        <div class="risk-card">
+            <h4>Risk Level Guide</h4>
+            <p><span style="color: #FF0000;">■</span> High Risk (Score: 10-16)</p>
+            <p><span style="color: #FFD700;">■</span> Medium Risk (Score: 5-9)</p>
+            <p><span style="color: #90EE90;">■</span> Low Risk (Score: 1-4)</p>
+        </div>
+    """, unsafe_allow_html=True)
 
 # Sidebar
 with st.sidebar:
@@ -284,9 +401,17 @@ with st.sidebar:
     
     st.markdown("### Historical Assessments")
     st.markdown("""
-        <div style="padding: 10px; background-color: rgba(144, 238, 144, 0.1); border-radius: 5px;">
-            <p>Last Assessment: 2024-02-15</p>
-            <p>Risk Trend: ↓ Improving</p>
-            <p>Completed Assessments: 12</p>
+        <div class="risk-card">
+            <p><strong>Last Assessment:</strong> 2024-02-15</p>
+            <p><strong>Risk Trend:</strong> <span style="color: #90EE90;">↓ Improving</span></p>
+            <p><strong>Completed Assessments:</strong> 12</p>
+            <p><strong>Next Scheduled:</strong> 2024-03-15</p>
         </div>
     """, unsafe_allow_html=True)
+    
+    st.markdown("### Quick Actions")
+    if st.button("Schedule Assessment"):
+        st.success("Assessment scheduled successfully!")
+    
+    if st.button("View Previous Reports"):
+        st.info("Loading previous reports...")
