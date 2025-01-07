@@ -162,11 +162,28 @@ st.markdown("""
         border-radius: 5px;
         padding: 8px 16px;
         transition: all 0.3s ease;
+        width: 100%;
     }
     
     .stButton>button:hover {
         background-color: #7BC47B;
         transform: translateY(-2px);
+    }
+    
+    /* Auth toggle button */
+    .auth-toggle-button>button {
+        background-color: transparent !important;
+        color: #90EE90 !important;
+        border: none;
+        text-decoration: underline;
+        width: auto;
+        padding: 0;
+    }
+    
+    .auth-toggle-button>button:hover {
+        background-color: transparent !important;
+        transform: none;
+        color: #7BC47B !important;
     }
     
     /* Inputs */
@@ -234,12 +251,6 @@ if 'signup_mode' not in st.session_state:
 if not st.session_state.authenticated:
     st.markdown("<h1 style='text-align: center; color: #FFFFFF;'>🔒 DiploCyber Hub</h1>", unsafe_allow_html=True)
     
-    # Toggle between login and signup
-    col1, col2, col3 = st.columns([1,2,1])
-    with col2:
-        if st.button("Switch to {}".format("Login" if st.session_state.signup_mode else "Sign Up")):
-            st.session_state.signup_mode = not st.session_state.signup_mode
-    
     if st.session_state.signup_mode:
         # Signup Form
         with st.form("signup_form"):
@@ -264,6 +275,15 @@ if not st.session_state.authenticated:
                         st.rerun()
                     else:
                         st.error("Username already exists!")
+        
+        # Toggle to login
+        col1, col2, col3 = st.columns([1,2,1])
+        with col2:
+            st.markdown("<div class='auth-toggle-button'>", unsafe_allow_html=True)
+            if st.button("Already have an account? Login"):
+                st.session_state.signup_mode = False
+                st.rerun()
+            st.markdown("</div>", unsafe_allow_html=True)
     else:
         # Login Form
         with st.form("login_form"):
@@ -280,6 +300,15 @@ if not st.session_state.authenticated:
                     st.rerun()
                 else:
                     st.error("Invalid username or password")
+        
+        # Toggle to signup
+        col1, col2, col3 = st.columns([1,2,1])
+        with col2:
+            st.markdown("<div class='auth-toggle-button'>", unsafe_allow_html=True)
+            if st.button("Don't have an account? Sign Up"):
+                st.session_state.signup_mode = True
+                st.rerun()
+            st.markdown("</div>", unsafe_allow_html=True)
 
 else:
     # Main Dashboard
@@ -427,7 +456,7 @@ else:
 
         st.plotly_chart(fig, use_container_width=True)
 
-   # Sidebar
+    # Sidebar
     with st.sidebar:
         st.markdown("<h3 style='color: #FFFFFF;'>Quick Actions</h3>", unsafe_allow_html=True)
         
