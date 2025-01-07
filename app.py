@@ -7,36 +7,6 @@ import hashlib
 import sqlite3
 import os
 from config import UI_CONFIG, APP_CONFIG
-# Page configuration
-st.set_page_config(
-    page_title="Home",
-    page_icon="🏠",
-    layout="wide",
-    initial_sidebar_state="expanded",
-    menu_items={
-        'Get Help': None,
-        'Report a bug': None,
-        'About': 'DiploCyber Hub - Home'
-    }
-)
-
-# Hide "app" from navigation and rename to "Home"
-st.markdown("""
-    <style>
-    .css-1oe5cao {
-        display: none;
-    }
-    [data-testid="stSidebarNav"] li:first-child a {
-        display: none;
-    }
-    [data-testid="stSidebarNav"] li:first-child:before {
-        content: "🏠 Home";
-        color: #FFFFFF;
-        margin-left: 20px;
-        font-size: 14px;
-    }
-    </style>
-""", unsafe_allow_html=True)
 
 # Initialize database
 def init_db():
@@ -93,10 +63,31 @@ init_db()
 # Page configuration
 st.set_page_config(
     page_title="DiploCyber Hub | Home",
-    page_icon="🔒",
+    page_icon="🏠",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="expanded",
+    menu_items={
+        'Get Help': None,
+        'Report a bug': None,
+        'About': 'DiploCyber Hub - Home'
+    }
 )
+
+# Hide default menu and rename app to Home
+st.markdown("""
+    <style>
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    /* Rename app to Home in navigation */
+    section[data-testid="stSidebar"] .css-1d391kg .css-1oe5cao {visibility: hidden;}
+    section[data-testid="stSidebar"] .css-1d391kg .css-1oe5cao::before {
+        content: "🏠 Home";
+        visibility: visible;
+        color: white;
+        margin-left: 20px;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
 # Custom styling
 st.markdown("""
@@ -209,6 +200,24 @@ st.markdown("""
     /* Text */
     p, li, span {
         color: #FFFFFF;
+    }
+    
+    /* Tab styling */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 24px;
+    }
+
+    .stTabs [data-baseweb="tab"] {
+        height: 50px;
+        background-color: transparent;
+        border: none;
+        color: #FFFFFF;
+    }
+    
+    .stTabs [aria-selected="true"] {
+        background-color: #90EE90 !important;
+        color: #000000 !important;
+        border-radius: 5px 5px 0 0;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -420,25 +429,4 @@ else:
 
     # Sidebar
     with st.sidebar:
-        st.markdown("<h3 style='color: #FFFFFF;'>Quick Actions</h3>", unsafe_allow_html=True)
-        
-        if st.button("Generate Report"):
-            st.success("Generating comprehensive report...")
-        
-        if st.button("Run Security Scan"):
-            st.info("Initiating security scan...")
-        
-        st.markdown("<h3 style='color: #FFFFFF;'>System Status</h3>", unsafe_allow_html=True)
-        st.markdown("""
-            <div class="metric-card">
-                <p>🟢 Core Systems: Operational</p>
-                <p>🟢 Database: Connected</p>
-                <p>🟢 Security Monitoring: Active</p>
-                <p>Last Updated: {}</p>
-            </div>
-        """.format(datetime.now().strftime("%H:%M:%S")), unsafe_allow_html=True)
-        
-        if st.button("Logout"):
-            st.session_state.authenticated = False
-            st.session_state.username = None
-            st.rerun()
+        st.markdown("<h3 style
