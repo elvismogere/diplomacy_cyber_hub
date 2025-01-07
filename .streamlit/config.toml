@@ -1,0 +1,14 @@
+[theme]
+primaryColor = "#90EE90"
+backgroundColor = "#1E1E1E"
+secondaryBackgroundColor = "#2D2D2D"
+textColor = "#FFFFFF"
+
+[browser]
+gatherUsageStats = false
+
+[server]
+enableXsrfProtection = true
+
+[pages]
+app = "🏠 Home"
