@@ -427,6 +427,27 @@ else:
 
         st.plotly_chart(fig, use_container_width=True)
 
-    # Sidebar
+   # Sidebar
     with st.sidebar:
-        st.markdown("<h3 style
+        st.markdown("<h3 style='color: #FFFFFF;'>Quick Actions</h3>", unsafe_allow_html=True)
+        
+        if st.button("Generate Report"):
+            st.success("Generating comprehensive report...")
+        
+        if st.button("Run Security Scan"):
+            st.info("Initiating security scan...")
+        
+        st.markdown("<h3 style='color: #FFFFFF;'>System Status</h3>", unsafe_allow_html=True)
+        st.markdown("""
+            <div class="metric-card">
+                <p>🟢 Core Systems: Operational</p>
+                <p>🟢 Database: Connected</p>
+                <p>🟢 Security Monitoring: Active</p>
+                <p>Last Updated: {}</p>
+            </div>
+        """.format(datetime.now().strftime("%H:%M:%S")), unsafe_allow_html=True)
+        
+        if st.button("Logout"):
+            st.session_state.authenticated = False
+            st.session_state.username = None
+            st.rerun()
