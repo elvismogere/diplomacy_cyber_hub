@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 import hashlib
 import sqlite3
 import os
+from config import UI_CONFIG, APP_CONFIG
 
 # Initialize database
 def init_db():
@@ -76,6 +77,11 @@ st.markdown("""
         color: #FFFFFF;
     }
     
+    /* Headers */
+    h1, h2, h3, h4, h5, h6 {
+        color: #FFFFFF !important;
+    }
+    
     /* Auth Forms */
     .auth-form {
         background-color: #2D2D2D;
@@ -91,7 +97,89 @@ st.markdown("""
         margin-bottom: 30px;
     }
     
-    /* Rest of your existing styles */
+    /* Cards */
+    .metric-card {
+        background-color: #2D2D2D;
+        border: 1px solid #90EE90;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+        margin: 10px 0;
+        transition: transform 0.3s ease;
+        color: #FFFFFF;
+    }
+    
+    .metric-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    /* Status Indicators */
+    .status-indicator {
+        height: 10px;
+        width: 10px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 5px;
+    }
+    
+    .status-active {
+        background-color: #90EE90;
+    }
+    
+    .status-warning {
+        background-color: #FFD700;
+    }
+    
+    .status-critical {
+        background-color: #FF4444;
+    }
+    
+    /* Buttons */
+    .stButton>button {
+        background-color: #90EE90;
+        color: #000000;
+        border-radius: 5px;
+        padding: 8px 16px;
+        transition: all 0.3s ease;
+    }
+    
+    .stButton>button:hover {
+        background-color: #7BC47B;
+        transform: translateY(-2px);
+    }
+    
+    /* Inputs */
+    .stTextInput>div>div>input {
+        background-color: #2D2D2D;
+        color: #FFFFFF;
+        border-color: #404040;
+    }
+    
+    /* Selectbox */
+    .stSelectbox>div>div {
+        background-color: #2D2D2D;
+        color: #FFFFFF;
+    }
+    
+    /* Sidebar */
+    .css-1d391kg {
+        background-color: #1E1E1E;
+    }
+    
+    /* Charts */
+    .js-plotly-plot .plotly .main-svg {
+        background-color: transparent !important;
+    }
+    
+    /* Links */
+    a {
+        color: #90EE90 !important;
+    }
+    
+    /* Text */
+    p, li, span {
+        color: #FFFFFF;
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -155,11 +243,171 @@ if not st.session_state.authenticated:
                     st.error("Invalid username or password")
 
 else:
-    # Your existing dashboard code here
-    [Rest of your existing dashboard code...]
+    # Main Dashboard
+    st.markdown("<h1 style='text-align: center; color: #FFFFFF;'>🔒 DiploCyber Hub</h1>", unsafe_allow_html=True)
+    st.markdown("<h3 style='text-align: center; color: #FFFFFF;'>Real-time Security Intelligence Dashboard</h3>", unsafe_allow_html=True)
 
-    # Add logout button to sidebar
+    # Quick Stats Row
+    col1, col2, col3, col4 = st.columns(4)
+    
+    with col1:
+        st.markdown("""
+            <div class="metric-card">
+                <h3>Threat Level</h3>
+                <h2 style="color: #FFD700;">Elevated</h2>
+                <p>↑ from Moderate</p>
+            </div>
+        """, unsafe_allow_html=True)
+    
+    with col2:
+        st.markdown("""
+            <div class="metric-card">
+                <h3>Active Incidents</h3>
+                <h2>12</h2>
+                <p>3 Critical, 9 Moderate</p>
+            </div>
+        """, unsafe_allow_html=True)
+    
+    with col3:
+        st.markdown("""
+            <div class="metric-card">
+                <h3>Protected Assets</h3>
+                <h2>156</h2>
+                <p>All systems operational</p>
+            </div>
+        """, unsafe_allow_html=True)
+    
+    with col4:
+        st.markdown("""
+            <div class="metric-card">
+                <h3>Security Score</h3>
+                <h2 style="color: #90EE90;">87/100</h2>
+                <p>↑ 5 points this week</p>
+            </div>
+        """, unsafe_allow_html=True)
+
+    # Threat Map and Activity Feed
+    col1, col2 = st.columns([2, 1])
+    
+    with col1:
+        st.markdown("<h3 style='color: #FFFFFF;'>Threat Map</h3>", unsafe_allow_html=True)
+        # Sample data for the map
+        df_threats = pd.DataFrame({
+            'lat': [-1.2921, -1.3, -1.25, -1.28],
+            'lon': [36.8219, 36.85, 36.82, 36.81],
+            'size': [20, 15, 25, 10],
+            'location': ['UN Complex', 'Regional HQ', 'Diplomatic Mission', 'Data Center']
+        })
+
+        fig = px.scatter_mapbox(df_threats, 
+                              lat='lat', 
+                              lon='lon', 
+                              size='size',
+                              hover_name='location',
+                              zoom=11)
+
+        fig.update_layout(
+            mapbox_style="carto-positron",
+            mapbox=dict(
+                center=dict(lat=-1.2921, lon=36.8219),
+            ),
+            height=400,
+            margin=dict(l=0, r=0, t=0, b=0),
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)'
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
+    
+    with col2:
+        st.markdown("<h3 style='color: #FFFFFF;'>Live Activity</h3>", unsafe_allow_html=True)
+        activities = [
+            {"time": "2 min ago", "event": "Suspicious login attempt", "severity": "critical"},
+            {"time": "5 min ago", "event": "Firewall rule updated", "severity": "warning"},
+            {"time": "10 min ago", "event": "System backup completed", "severity": "active"},
+            {"time": "15 min ago", "event": "New security patch", "severity": "active"}
+        ]
+        
+        for activity in activities:
+            st.markdown(f"""
+                <div class="metric-card">
+                    <div><span class="status-indicator status-{activity['severity']}"></span>{activity['event']}</div>
+                    <small>{activity['time']}</small>
+                </div>
+            """, unsafe_allow_html=True)
+
+    # Threat Analysis
+    st.markdown("<h3 style='color: #FFFFFF;'>Threat Analysis</h3>", unsafe_allow_html=True)
+    
+    tab1, tab2 = st.tabs(["Threat Distribution", "Timeline Analysis"])
+    
+    with tab1:
+        # Sample threat distribution data
+        threat_types = ['Phishing', 'Malware', 'DDoS', 'Unauthorized Access', 'Data Breach']
+        threat_counts = [45, 32, 28, 20, 15]
+
+        fig = go.Figure(data=[
+            go.Bar(
+                x=threat_types,
+                y=threat_counts,
+                marker_color=['#FFD700', '#90EE90', '#000000', '#FFD700', '#90EE90']
+            )
+        ])
+
+        fig.update_layout(
+            title='Threat Distribution by Type',
+            height=400,
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+            font=dict(color='#FFFFFF')
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
+    
+    with tab2:
+        # Generate sample timeline data
+        dates = pd.date_range(start='2024-01-01', end='2024-02-29', freq='D')
+        incidents = [abs(10 + (i % 5) + (i % 3)) for i in range(len(dates))]
+
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(
+            x=dates,
+            y=incidents,
+            mode='lines+markers',
+            line=dict(color='#FFD700', width=2),
+            marker=dict(size=6, color='#000000')
+        ))
+
+        fig.update_layout(
+            title='Incident Timeline',
+            height=400,
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+            font=dict(color='#FFFFFF')
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
+
+    # Sidebar
     with st.sidebar:
+        st.markdown("<h3 style='color: #FFFFFF;'>Quick Actions</h3>", unsafe_allow_html=True)
+        
+        if st.button("Generate Report"):
+            st.success("Generating comprehensive report...")
+        
+        if st.button("Run Security Scan"):
+            st.info("Initiating security scan...")
+        
+        st.markdown("<h3 style='color: #FFFFFF;'>System Status</h3>", unsafe_allow_html=True)
+        st.markdown("""
+            <div class="metric-card">
+                <p>🟢 Core Systems: Operational</p>
+                <p>🟢 Database: Connected</p>
+                <p>🟢 Security Monitoring: Active</p>
+                <p>Last Updated: {}</p>
+            </div>
+        """.format(datetime.now().strftime("%H:%M:%S")), unsafe_allow_html=True)
+        
         if st.button("Logout"):
             st.session_state.authenticated = False
             st.session_state.username = None
