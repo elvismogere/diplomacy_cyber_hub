@@ -9,6 +9,3 @@ gatherUsageStats = false
 
 [server]
 enableXsrfProtection = true
-
-[pages]
-app = "🏠 Home"
