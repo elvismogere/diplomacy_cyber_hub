@@ -1,6 +1,14 @@
 import streamlit as st
-from datetime import datetime
 import json
+from datetime import datetime
+from config import (
+    DEFAULT_SETTINGS, 
+    UI_CONFIG, 
+    SECURITY_CONFIG, 
+    NOTIFICATION_CONFIG,
+    EMAIL_CONFIG,
+    APP_CONFIG
+)
 
 # Page configuration
 st.set_page_config(
@@ -10,33 +18,31 @@ st.set_page_config(
     menu_items={
         'Get Help': None,
         'Report a bug': None,
-        'About': 'DiploCyber Hub - Settings'
+        'About': f"{APP_CONFIG['name']} - Settings"
     }
 )
 
 # Custom styling
 st.markdown("""
     <style>
-    /* Global theme consistency */
+    /* Main Layout */
     .main {
         background-color: var(--background-color);
         color: var(--text-color);
-        font-family: 'Helvetica Neue', sans-serif;
     }
     
     /* Settings Header */
     .settings-header {
-        color: #000000;
+        color: var(--text-color);
         font-size: 2.5rem;
         text-align: center;
         padding: 1.5rem;
-        background: linear-gradient(to right, #FFFFFF, #90EE90, #FFFFFF);
+        background: linear-gradient(to right, rgba(144, 238, 144, 0.1), rgba(144, 238, 144, 0.2), rgba(144, 238, 144, 0.1));
         border-radius: 10px;
         margin-bottom: 2rem;
-        font-weight: 600;
     }
     
-    /* Settings card styling */
+    /* Settings Cards */
     .settings-card {
         background-color: var(--card-background);
         border: 1px solid var(--border-color);
@@ -44,58 +50,25 @@ st.markdown("""
         border-radius: 10px;
         box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
         margin: 10px 0;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
     
-    .settings-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-    }
-    
-    /* Section styling */
-    .settings-section {
-        margin-top: 20px;
-        padding-bottom: 20px;
-        border-bottom: 1px solid var(--border-color);
-    }
-    
-    /* Form elements styling */
-    .stTextInput>div>div>input {
-        border-radius: 5px;
-        border: 1px solid var(--border-color);
-        background-color: var(--background-color);
+    /* Section Headers */
+    .section-header {
         color: var(--text-color);
+        border-bottom: 2px solid #90EE90;
+        padding-bottom: 10px;
+        margin: 20px 0;
     }
     
+    /* Form Elements */
+    .stTextInput>div>div>input,
     .stSelectbox>div>div>div {
-        border-radius: 5px;
-        border: 1px solid var(--border-color);
         background-color: var(--background-color);
         color: var(--text-color);
-    }
-    
-    /* Button styling */
-    .stButton>button {
-        background-color: #000000;
-        color: #FFFFFF;
-        border-radius: 20px;
-        padding: 10px 20px;
-        transition: all 0.3s ease;
-    }
-    
-    .stButton>button:hover {
-        background-color: #90EE90;
-        color: #000000;
-        transform: translateY(-2px);
-    }
-    
-    /* Toggle switch styling */
-    .stCheckbox>div>label>span {
-        background-color: var(--background-color);
         border-color: var(--border-color);
     }
     
-    /* Dark mode styles */
+    /* Dark mode */
     [data-theme="dark"] {
         --background-color: #1E1E1E;
         --text-color: #FFFFFF;
@@ -103,111 +76,105 @@ st.markdown("""
         --border-color: #404040;
     }
     
-    /* Light mode styles */
+    /* Light mode */
     [data-theme="light"] {
         --background-color: #FFFFFF;
         --text-color: #000000;
         --card-background: #FFFFFF;
         --border-color: #90EE90;
     }
-    
-    /* Section headers */
-    .section-header {
-        color: #000000;
-        border-bottom: 2px solid #90EE90;
-        padding-bottom: 10px;
-        margin: 20px 0;
-        font-weight: 600;
-    }
     </style>
 """, unsafe_allow_html=True)
 
-# Initialize theme state
-if 'theme' not in st.session_state:
-    st.session_state.theme = "light"
-
-# Theme toggle in header
-col1, col2 = st.columns([6,1])
-with col2:
-    if st.button("🌓 Toggle Theme"):
-        st.session_state.theme = "dark" if st.session_state.theme == "light" else "light"
-        st.rerun()
-
-# Apply theme
-st.markdown(f"""
-    <script>
-        document.body.setAttribute('data-theme', '{st.session_state.theme}');
-    </script>
-    """, unsafe_allow_html=True)
+# Initialize session state for settings
+if 'settings' not in st.session_state:
+    st.session_state.settings = DEFAULT_SETTINGS
 
 # Header
 st.markdown("<h1 class='settings-header'>⚙️ Settings</h1>", unsafe_allow_html=True)
 
 # Create tabs for different settings categories
 tab1, tab2, tab3, tab4 = st.tabs([
-    "Organization Profile", 
-    "Security Settings", 
-    "Notification Preferences",
-    "System Configuration"
+    "General Settings", 
+    "Security", 
+    "Notifications",
+    "System"
 ])
 
 with tab1:
-    st.markdown("<h3 class='section-header'>Organization Profile</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 class='section-header'>General Settings</h3>", unsafe_allow_html=True)
     
-    col1, col2 = st.columns(2)
-    with col1:
-        st.markdown("<div class='settings-card'>", unsafe_allow_html=True)
-        org_name = st.text_input("Organization Name", "UN Agency")
-        org_type = st.selectbox(
-            "Organization Type",
-            ["UN Agency", "Regional IGO", "Diplomatic Mission", "International NGO"]
-        )
-        country = st.selectbox("Country", ["Kenya", "Tanzania", "Uganda", "Rwanda", "Ethiopia"])
-        st.markdown("</div>", unsafe_allow_html=True)
+    # Theme Selection
+    st.markdown("<div class='settings-card'>", unsafe_allow_html=True)
+    st.markdown("#### Theme Settings")
+    theme = st.selectbox(
+        "Application Theme",
+        ["Dark", "Light"],
+        index=0 if st.session_state.settings['theme'] == 'dark' else 1
+    )
     
-    with col2:
-        st.markdown("<div class='settings-card'>", unsafe_allow_html=True)
-        primary_contact = st.text_input("Primary Contact Name")
-        contact_email = st.text_input("Contact Email")
-        phone = st.text_input("Phone Number")
-        st.markdown("</div>", unsafe_allow_html=True)
+    # Language Selection
+    language = st.selectbox(
+        "Language",
+        ["English", "French", "Spanish", "Arabic"],
+        index=0
+    )
     
-    if st.button("Update Profile", key="profile"):
-        st.success("Organization profile updated successfully!")
+    # Timezone Selection
+    timezone = st.selectbox(
+        "Timezone",
+        ["Africa/Nairobi", "UTC", "Europe/London", "US/Eastern"],
+        index=0
+    )
+    st.markdown("</div>", unsafe_allow_html=True)
+    
+    # Profile Settings
+    st.markdown("<div class='settings-card'>", unsafe_allow_html=True)
+    st.markdown("#### Profile Settings")
+    organization = st.text_input("Organization Name", value=st.session_state.get('organization', ''))
+    email = st.text_input("Contact Email", value=st.session_state.get('email', ''))
+    st.markdown("</div>", unsafe_allow_html=True)
+    
+    if st.button("Save General Settings"):
+        st.session_state.settings['theme'] = theme.lower()
+        st.session_state.settings['language'] = language
+        st.success("Settings saved successfully!")
 
 with tab2:
     st.markdown("<h3 class='section-header'>Security Settings</h3>", unsafe_allow_html=True)
     
     # Authentication Settings
     st.markdown("<div class='settings-card'>", unsafe_allow_html=True)
-    st.markdown("#### Authentication Settings")
+    st.markdown("#### Authentication")
     
-    mfa_enabled = st.toggle("Enable Multi-Factor Authentication", value=True)
-    session_timeout = st.slider("Session Timeout (minutes)", 5, 60, 30)
-    password_expiry = st.slider("Password Expiry (days)", 30, 180, 90)
+    mfa_enabled = st.toggle("Enable Two-Factor Authentication", value=SECURITY_CONFIG['mfa_enabled'])
+    session_timeout = st.slider(
+        "Session Timeout (minutes)",
+        min_value=5,
+        max_value=60,
+        value=30
+    )
     
     st.markdown("#### Password Policy")
-    min_length = st.number_input("Minimum Password Length", 8, 20, 12)
-    require_special = st.checkbox("Require Special Characters", value=True)
-    require_numbers = st.checkbox("Require Numbers", value=True)
+    min_length = st.number_input(
+        "Minimum Password Length",
+        min_value=8,
+        max_value=20,
+        value=SECURITY_CONFIG['password_min_length']
+    )
+    require_special = st.checkbox("Require Special Characters", value=SECURITY_CONFIG['password_require_special'])
+    require_numbers = st.checkbox("Require Numbers", value=SECURITY_CONFIG['password_require_numbers'])
     st.markdown("</div>", unsafe_allow_html=True)
     
-    # Access Control
-    st.markdown("<div class='settings-card'>", unsafe_allow_html=True)
-    st.markdown("#### Access Control")
-    
-    ip_whitelist = st.text_area("IP Whitelist (one per line)")
-    allowed_domains = st.text_input("Allowed Email Domains (comma-separated)")
-    st.markdown("</div>", unsafe_allow_html=True)
-    
-    if st.button("Save Security Settings", key="security"):
+    if st.button("Save Security Settings"):
         st.success("Security settings updated successfully!")
 
 with tab3:
-    st.markdown("<h3 class='section-header'>Notification Preferences</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 class='section-header'>Notification Settings</h3>", unsafe_allow_html=True)
     
+    # Alert Settings
     st.markdown("<div class='settings-card'>", unsafe_allow_html=True)
-    st.markdown("#### Alert Settings")
+    st.markdown("#### Alert Preferences")
     
     alert_levels = st.multiselect(
         "Receive alerts for threat levels:",
@@ -217,7 +184,7 @@ with tab3:
     
     notification_methods = st.multiselect(
         "Notification Methods:",
-        ["Email", "SMS", "In-App", "Webhook"],
+        ["Email", "In-App", "Browser"],
         default=["Email", "In-App"]
     )
     
@@ -227,86 +194,78 @@ with tab3:
     )
     st.markdown("</div>", unsafe_allow_html=True)
     
-    # Custom Alerts
+    # Quiet Hours
     st.markdown("<div class='settings-card'>", unsafe_allow_html=True)
-    st.markdown("#### Custom Alert Rules")
-    
-    if st.button("Add Custom Alert Rule"):
-        st.info("Custom alert rule configuration will be available in the next update.")
+    st.markdown("#### Quiet Hours")
+    enable_quiet_hours = st.checkbox("Enable Quiet Hours")
+    if enable_quiet_hours:
+        col1, col2 = st.columns(2)
+        with col1:
+            quiet_start = st.time_input("Start Time", value=datetime.strptime("22:00", "%H:%M").time())
+        with col2:
+            quiet_end = st.time_input("End Time", value=datetime.strptime("07:00", "%H:%M").time())
     st.markdown("</div>", unsafe_allow_html=True)
     
-    if st.button("Save Notification Settings", key="notifications"):
+    if st.button("Save Notification Settings"):
         st.success("Notification preferences updated successfully!")
 
 with tab4:
-    st.markdown("<h3 class='section-header'>System Configuration</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 class='section-header'>System Settings</h3>", unsafe_allow_html=True)
+    
+    # System Information
+    st.markdown("<div class='settings-card'>", unsafe_allow_html=True)
+    st.markdown("#### System Information")
+    st.info(f"Version: {APP_CONFIG['version']}")
+    st.info(f"Last Updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    st.markdown("</div>", unsafe_allow_html=True)
     
     # Data Management
     st.markdown("<div class='settings-card'>", unsafe_allow_html=True)
     st.markdown("#### Data Management")
     
-    data_retention = st.slider("Data Retention Period (days)", 30, 365, 180)
+    data_retention = st.slider(
+        "Data Retention Period (days)",
+        min_value=30,
+        max_value=365,
+        value=90
+    )
+    
     backup_frequency = st.select_slider(
         "Backup Frequency",
         options=["Daily", "Weekly", "Monthly"]
     )
-    
-    st.markdown("#### System Integration")
-    api_key = st.text_input("API Key", type="password")
-    webhook_url = st.text_input("Webhook URL")
     st.markdown("</div>", unsafe_allow_html=True)
     
-    # Advanced Settings
+    # Export Configuration
     st.markdown("<div class='settings-card'>", unsafe_allow_html=True)
-    st.markdown("#### Advanced Settings")
+    st.markdown("#### Configuration Management")
     
-    debug_mode = st.checkbox("Enable Debug Mode")
-    analytics_tracking = st.checkbox("Enable Analytics Tracking", value=True)
-    
-    if st.button("Export Configuration"):
+    if st.button("Export Settings"):
+        settings_json = json.dumps(st.session_state.settings, indent=2)
         st.download_button(
-            label="Download Configuration File",
-            data=json.dumps({
-                "organization": org_name,
-                "security_settings": {
-                    "mfa_enabled": mfa_enabled,
-                    "session_timeout": session_timeout
-                },
-                "notification_settings": {
-                    "alert_levels": alert_levels,
-                    "methods": notification_methods
-                }
-            }),
-            file_name=f"config_{datetime.now().strftime('%Y%m%d')}.json",
+            label="Download Settings File",
+            data=settings_json,
+            file_name=f"settings_{datetime.now().strftime('%Y%m%d')}.json",
             mime="application/json"
         )
+    
+    if st.button("Reset to Defaults"):
+        st.session_state.settings = DEFAULT_SETTINGS.copy()
+        st.success("Settings reset to defaults successfully!")
     st.markdown("</div>", unsafe_allow_html=True)
 
-# Sidebar with quick actions
+# Sidebar
 with st.sidebar:
     st.markdown("### Quick Actions")
     
-    if st.button("Reset to Defaults"):
-        st.warning("This will reset all settings to default values.")
-        
     if st.button("Backup Settings"):
         st.success("Settings backed up successfully!")
     
-    st.markdown("### System Status")
-    st.markdown("""
-        <div class="settings-card">
-            <p>System Version: 1.0.0</p>
-            <p>Last Updated: {}</p>
-            <p>Status: Operational</p>
-        </div>
-    """.format(datetime.now().strftime("%Y-%m-%d %H:%M:%S")), unsafe_allow_html=True)
-    
-    # Support Section
     st.markdown("### Support")
     st.markdown("""
-        <div class="settings-card">
-            <p>Need help? Contact support:</p>
-            <p>📧 support@diplocyber.com</p>
-            <p>📞 +254 XXX XXX XXX</p>
+        <div class='settings-card'>
+            Need help? Contact support:
+            - 📧 support@diplocyber.com
+            - 📞 +254 XXX XXX XXX
         </div>
     """, unsafe_allow_html=True)
