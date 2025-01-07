@@ -4,46 +4,74 @@ from datetime import datetime
 
 # Page configuration
 st.set_page_config(
-    page_title="Resource Library | DiploCyber Hub",
+    page_title="DiploCyber Hub | Resource Library",
     page_icon="📚",
-    layout="wide"
+    layout="wide",
+    menu_items={
+        'Get Help': None,
+        'Report a bug': None,
+        'About': 'DiploCyber Hub - Resource Library'
+    }
 )
 
 # Custom styling
 st.markdown("""
     <style>
-    .library-header {
-        font-size: 2rem;
-        color: #000000;
-        padding: 1rem 0;
-        border-bottom: 2px solid #90EE90;
-        margin-bottom: 2rem;
+    /* Global theme consistency */
+    .main {
+        background-color: var(--background-color);
+        color: var(--text-color);
+        font-family: 'Helvetica Neue', sans-serif;
     }
+    
+    /* Library Header */
+    .library-header {
+        color: #000000;
+        font-size: 2.5rem;
+        text-align: center;
+        padding: 1.5rem;
+        background: linear-gradient(to right, #FFFFFF, #90EE90, #FFFFFF);
+        border-radius: 10px;
+        margin-bottom: 2rem;
+        font-weight: 600;
+    }
+    
+    /* Search box styling */
+    .search-box {
+        background-color: var(--card-background);
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    /* Resource card styling */
     .resource-card {
-        background-color: #FFFFFF;
-        border: 1px solid #90EE90;
+        background-color: var(--card-background);
+        border: 1px solid var(--border-color);
         padding: 20px;
         border-radius: 10px;
         box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
         margin: 10px 0;
-        transition: transform 0.3s ease;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
+    
     .resource-card:hover {
         transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
     }
-    .search-box {
-        background-color: #FFFFFF;
-        padding: 20px;
-        border-radius: 10px;
-        margin-bottom: 20px;
-        border: 1px solid #90EE90;
-    }
+    
+    /* Category headers */
     .category-header {
         color: #000000;
-        border-bottom: 2px solid #FFD700;
+        border-bottom: 2px solid #90EE90;
         padding-bottom: 10px;
         margin: 20px 0;
+        font-weight: 600;
     }
+    
+    /* Tag styling */
     .tag {
         background-color: rgba(144, 238, 144, 0.2);
         padding: 5px 10px;
@@ -52,8 +80,72 @@ st.markdown("""
         display: inline-block;
         font-size: 0.8rem;
     }
+    
+    /* Button styling */
+    .stButton>button {
+        background-color: #000000;
+        color: #FFFFFF;
+        border-radius: 20px;
+        padding: 10px 20px;
+        transition: all 0.3s ease;
+    }
+    
+    .stButton>button:hover {
+        background-color: #90EE90;
+        color: #000000;
+        transform: translateY(-2px);
+    }
+    
+    /* Dark mode styles */
+    [data-theme="dark"] {
+        --background-color: #1E1E1E;
+        --text-color: #FFFFFF;
+        --card-background: #2D2D2D;
+        --border-color: #404040;
+    }
+    
+    /* Light mode styles */
+    [data-theme="light"] {
+        --background-color: #FFFFFF;
+        --text-color: #000000;
+        --card-background: #FFFFFF;
+        --border-color: #90EE90;
+    }
+    
+    /* Progress bar styling */
+    .progress-bar {
+        background-color: #f0f0f0;
+        border-radius: 5px;
+        padding: 3px;
+        margin: 10px 0;
+    }
+    
+    .progress-bar-fill {
+        background-color: #90EE90;
+        height: 10px;
+        border-radius: 5px;
+        transition: width 0.3s ease;
+    }
     </style>
 """, unsafe_allow_html=True)
+
+# Initialize theme state
+if 'theme' not in st.session_state:
+    st.session_state.theme = "light"
+
+# Theme toggle in header
+col1, col2 = st.columns([6,1])
+with col2:
+    if st.button("🌓 Toggle Theme"):
+        st.session_state.theme = "dark" if st.session_state.theme == "light" else "light"
+        st.rerun()
+
+# Apply theme
+st.markdown(f"""
+    <script>
+        document.body.setAttribute('data-theme', '{st.session_state.theme}');
+    </script>
+    """, unsafe_allow_html=True)
 
 # Header
 st.markdown("<h1 class='library-header'>📚 Resource Library</h1>", unsafe_allow_html=True)
@@ -176,10 +268,10 @@ with tab3:
         <div class='resource-card'>
             <h4>Cybersecurity Fundamentals for Diplomatic Staff</h4>
             <p>Interactive training module covering essential cybersecurity concepts</p>
-            <div style='background-color: #f0f0f0; padding: 10px; border-radius: 5px; margin: 10px 0;'>
-                <p>Module Progress: 60%</p>
-                <div style='background-color: #90EE90; width: 60%; height: 10px; border-radius: 5px;'></div>
+            <div class='progress-bar'>
+                <div class='progress-bar-fill' style='width: 60%;'></div>
             </div>
+            <p>Progress: 60% Complete</p>
             <button style='background-color: #000000; color: white; border: none; padding: 5px 15px; 
                     border-radius: 5px; cursor: pointer;'>Continue Training</button>
         </div>
@@ -187,12 +279,12 @@ with tab3:
         <div class='resource-card'>
             <h4>Advanced Security Protocols</h4>
             <p>Comprehensive training on implementing security protocols</p>
-            <div style='background-color: #f0f0f0; padding: 10px; border-radius: 5px; margin: 10px 0;'>
-                <p>Module Progress: 30%</p>
-                <div style='background-color: #90EE90; width: 30%; height: 10px; border-radius: 5px;'></div>
+            <div class='progress-bar'>
+                <div class='progress-bar-fill' style='width: 30%;'></div>
             </div>
+            <p>Progress: 30% Complete</p>
             <button style='background-color: #000000; color: white; border: none; padding: 5px 15px; 
-                    border-radius: 5px; cursor: pointer;'>Start Module</button>
+                    border-radius: 5px; cursor: pointer;'>Continue Module</button>
         </div>
     """, unsafe_allow_html=True)
 
@@ -243,7 +335,7 @@ with st.sidebar:
     
     st.markdown("### Resource Statistics")
     st.markdown("""
-        <div style='padding: 10px; background-color: rgba(144, 238, 144, 0.1); border-radius: 5px;'>
+        <div class='resource-card'>
             <p>Total Resources: 45</p>
             <p>Updated this month: 12</p>
             <p>Most accessed: Security Guidelines</p>
