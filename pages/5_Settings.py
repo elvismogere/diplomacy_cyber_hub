@@ -4,48 +4,141 @@ import json
 
 # Page configuration
 st.set_page_config(
-    page_title="Settings | DiploCyber Hub",
+    page_title="DiploCyber Hub | Settings",
     page_icon="⚙️",
-    layout="wide"
+    layout="wide",
+    menu_items={
+        'Get Help': None,
+        'Report a bug': None,
+        'About': 'DiploCyber Hub - Settings'
+    }
 )
 
 # Custom styling
 st.markdown("""
     <style>
-    .settings-header {
-        font-size: 2rem;
-        color: #000000;
-        padding: 1rem 0;
-        border-bottom: 2px solid #90EE90;
-        margin-bottom: 2rem;
+    /* Global theme consistency */
+    .main {
+        background-color: var(--background-color);
+        color: var(--text-color);
+        font-family: 'Helvetica Neue', sans-serif;
     }
+    
+    /* Settings Header */
+    .settings-header {
+        color: #000000;
+        font-size: 2.5rem;
+        text-align: center;
+        padding: 1.5rem;
+        background: linear-gradient(to right, #FFFFFF, #90EE90, #FFFFFF);
+        border-radius: 10px;
+        margin-bottom: 2rem;
+        font-weight: 600;
+    }
+    
+    /* Settings card styling */
     .settings-card {
-        background-color: #FFFFFF;
-        border: 1px solid #90EE90;
+        background-color: var(--card-background);
+        border: 1px solid var(--border-color);
         padding: 20px;
         border-radius: 10px;
         box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
         margin: 10px 0;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
+    
+    .settings-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    
+    /* Section styling */
     .settings-section {
         margin-top: 20px;
         padding-bottom: 20px;
-        border-bottom: 1px solid #f0f0f0;
+        border-bottom: 1px solid var(--border-color);
     }
-    .save-button {
+    
+    /* Form elements styling */
+    .stTextInput>div>div>input {
+        border-radius: 5px;
+        border: 1px solid var(--border-color);
+        background-color: var(--background-color);
+        color: var(--text-color);
+    }
+    
+    .stSelectbox>div>div>div {
+        border-radius: 5px;
+        border: 1px solid var(--border-color);
+        background-color: var(--background-color);
+        color: var(--text-color);
+    }
+    
+    /* Button styling */
+    .stButton>button {
+        background-color: #000000;
+        color: #FFFFFF;
+        border-radius: 20px;
+        padding: 10px 20px;
+        transition: all 0.3s ease;
+    }
+    
+    .stButton>button:hover {
         background-color: #90EE90;
         color: #000000;
-        padding: 10px 20px;
-        border-radius: 5px;
-        border: none;
-        cursor: pointer;
-        margin-top: 10px;
+        transform: translateY(-2px);
     }
-    .save-button:hover {
-        background-color: #7BC47B;
+    
+    /* Toggle switch styling */
+    .stCheckbox>div>label>span {
+        background-color: var(--background-color);
+        border-color: var(--border-color);
+    }
+    
+    /* Dark mode styles */
+    [data-theme="dark"] {
+        --background-color: #1E1E1E;
+        --text-color: #FFFFFF;
+        --card-background: #2D2D2D;
+        --border-color: #404040;
+    }
+    
+    /* Light mode styles */
+    [data-theme="light"] {
+        --background-color: #FFFFFF;
+        --text-color: #000000;
+        --card-background: #FFFFFF;
+        --border-color: #90EE90;
+    }
+    
+    /* Section headers */
+    .section-header {
+        color: #000000;
+        border-bottom: 2px solid #90EE90;
+        padding-bottom: 10px;
+        margin: 20px 0;
+        font-weight: 600;
     }
     </style>
 """, unsafe_allow_html=True)
+
+# Initialize theme state
+if 'theme' not in st.session_state:
+    st.session_state.theme = "light"
+
+# Theme toggle in header
+col1, col2 = st.columns([6,1])
+with col2:
+    if st.button("🌓 Toggle Theme"):
+        st.session_state.theme = "dark" if st.session_state.theme == "light" else "light"
+        st.rerun()
+
+# Apply theme
+st.markdown(f"""
+    <script>
+        document.body.setAttribute('data-theme', '{st.session_state.theme}');
+    </script>
+    """, unsafe_allow_html=True)
 
 # Header
 st.markdown("<h1 class='settings-header'>⚙️ Settings</h1>", unsafe_allow_html=True)
@@ -59,7 +152,7 @@ tab1, tab2, tab3, tab4 = st.tabs([
 ])
 
 with tab1:
-    st.markdown("<h3>Organization Profile</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 class='section-header'>Organization Profile</h3>", unsafe_allow_html=True)
     
     col1, col2 = st.columns(2)
     with col1:
@@ -83,7 +176,7 @@ with tab1:
         st.success("Organization profile updated successfully!")
 
 with tab2:
-    st.markdown("<h3>Security Settings</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 class='section-header'>Security Settings</h3>", unsafe_allow_html=True)
     
     # Authentication Settings
     st.markdown("<div class='settings-card'>", unsafe_allow_html=True)
@@ -111,7 +204,7 @@ with tab2:
         st.success("Security settings updated successfully!")
 
 with tab3:
-    st.markdown("<h3>Notification Preferences</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 class='section-header'>Notification Preferences</h3>", unsafe_allow_html=True)
     
     st.markdown("<div class='settings-card'>", unsafe_allow_html=True)
     st.markdown("#### Alert Settings")
@@ -146,7 +239,7 @@ with tab3:
         st.success("Notification preferences updated successfully!")
 
 with tab4:
-    st.markdown("<h3>System Configuration</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 class='section-header'>System Configuration</h3>", unsafe_allow_html=True)
     
     # Data Management
     st.markdown("<div class='settings-card'>", unsafe_allow_html=True)
@@ -200,5 +293,20 @@ with st.sidebar:
         st.success("Settings backed up successfully!")
     
     st.markdown("### System Status")
-    st.info("System Version: 1.0.0")
-    st.info("Last Updated: " + datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+    st.markdown("""
+        <div class="settings-card">
+            <p>System Version: 1.0.0</p>
+            <p>Last Updated: {}</p>
+            <p>Status: Operational</p>
+        </div>
+    """.format(datetime.now().strftime("%Y-%m-%d %H:%M:%S")), unsafe_allow_html=True)
+    
+    # Support Section
+    st.markdown("### Support")
+    st.markdown("""
+        <div class="settings-card">
+            <p>Need help? Contact support:</p>
+            <p>📧 support@diplocyber.com</p>
+            <p>📞 +254 XXX XXX XXX</p>
+        </div>
+    """, unsafe_allow_html=True)
