@@ -1,5 +1,14 @@
 import os
+from pathlib import Path
 from datetime import timedelta
+
+# Create necessary directories
+settings_dir = Path("settings")
+settings_dir.mkdir(exist_ok=True)
+
+# File paths
+SETTINGS_FILE = settings_dir / "user_settings.json"
+DATABASE_FILE = "users.db"
 
 # Application Configuration
 APP_CONFIG = {
@@ -9,44 +18,36 @@ APP_CONFIG = {
     "organization": "UN Agencies and IGOs in Kenya",
 }
 
-# Security Settings
-SECURITY_CONFIG = {
-    "session_duration": timedelta(hours=8),
-    "password_expiry_days": 90,
-    "min_password_length": 12,
-    "require_special_chars": True,
-    "require_numbers": True,
-    "max_login_attempts": 3,
-    "mfa_enabled": True,
+# Default settings
+DEFAULT_SETTINGS = {
+    "theme": "dark",
+    "language": "en",
+    "notifications_enabled": True,
+    "session_timeout": 30,
+    "date_format": "%Y-%m-%d",
+    "time_format": "%H:%M:%S",
+    "timezone": "Africa/Nairobi"
 }
 
-# API Configuration
-API_CONFIG = {
-    "base_url": "https://api.diplocyber.com",
-    "version": "v1",
-    "timeout": 30,  # seconds
-    "rate_limit": 100,  # requests per minute
+# Security Configuration
+SECURITY_CONFIG = {
+    "session_duration": timedelta(hours=8),
+    "password_min_length": 8,
+    "password_require_special": True,
+    "password_require_numbers": True,
+    "max_login_attempts": 3,
+    "lockout_duration": timedelta(minutes=15),
+    "mfa_enabled": False,
+    "allowed_domains": ["*.un.org", "*.go.ke", "*.int"],
 }
 
 # Database Configuration
 DB_CONFIG = {
-    "type": "sqlite",  # can be changed to postgresql for production
-    "name": "diplocyber.db",
+    "type": "sqlite",
+    "name": DATABASE_FILE,
     "backup_enabled": True,
     "backup_frequency": "daily",
     "max_connections": 20,
-}
-
-# Monitoring Configuration
-MONITORING_CONFIG = {
-    "log_level": "INFO",
-    "enable_audit_trail": True,
-    "metrics_retention_days": 90,
-    "alert_threshold": {
-        "critical": 90,
-        "warning": 70,
-        "info": 50,
-    },
 }
 
 # Email Configuration
@@ -58,94 +59,12 @@ EMAIL_CONFIG = {
     "reply_to": "support@diplocyber.com",
 }
 
-# Threat Intelligence Sources
-THREAT_INTELLIGENCE = {
-    "sources": [
-        {
-            "name": "Kenya CERT",
-            "enabled": True,
-            "priority": "high",
-        },
-        {
-            "name": "African Union Cybersecurity",
-            "enabled": True,
-            "priority": "high",
-        },
-        {
-            "name": "UN Security Advisory",
-            "enabled": True,
-            "priority": "critical",
-        },
-    ],
-    "update_frequency": "hourly",
-}
-
-# User Roles and Permissions
-ROLES = {
-    "administrator": {
-        "can_view_dashboard": True,
-        "can_modify_settings": True,
-        "can_manage_users": True,
-        "can_view_reports": True,
-        "can_modify_rules": True,
-    },
-    "security_analyst": {
-        "can_view_dashboard": True,
-        "can_modify_settings": False,
-        "can_manage_users": False,
-        "can_view_reports": True,
-        "can_modify_rules": True,
-    },
-    "viewer": {
-        "can_view_dashboard": True,
-        "can_modify_settings": False,
-        "can_manage_users": False,
-        "can_view_reports": True,
-        "can_modify_rules": False,
-    },
-}
-
-# UI Configuration
-UI_CONFIG = {
-    "theme": {
-        "primary_color": "#000000",
-        "secondary_color": "#FFFFFF",
-        "accent_color": "#90EE90",
-        "highlight_color": "#FFD700",
-    },
-    "dashboard": {
-        "refresh_interval": 60,  # seconds
-        "max_alerts_displayed": 10,
-        "enable_animations": True,
-    },
-    "charts": {
-        "default_height": 400,
-        "enable_interactive": True,
-        "color_palette": ["#FFD700", "#90EE90", "#000000"],
-    },
-}
-
-# Feature Flags
-FEATURES = {
-    "enable_mfa": True,
-    "enable_api_access": True,
-    "enable_export": True,
-    "enable_advanced_analytics": True,
-    "enable_threat_intelligence": True,
-    "enable_automated_response": False,  # Coming soon
-    "enable_machine_learning": False,    # Coming soon
-}
-
 # Notification Settings
 NOTIFICATION_CONFIG = {
     "channels": {
         "email": {
             "enabled": True,
             "priority": ["critical", "high"],
-        },
-        "sms": {
-            "enabled": True,
-            "priority": ["critical"],
         },
         "in_app": {
             "enabled": True,
@@ -159,15 +78,57 @@ NOTIFICATION_CONFIG = {
     },
 }
 
-# Regional Settings
-REGIONAL_CONFIG = {
-    "timezone": "Africa/Nairobi",
-    "date_format": "%Y-%m-%d",
-    "time_format": "%H:%M:%S",
-    "language": "en",
-    "country": "KE",
+# UI Configuration
+UI_CONFIG = {
+    "theme": {
+        "dark": {
+            "background": "#1E1E1E",
+            "text": "#FFFFFF",
+            "primary": "#90EE90",
+            "secondary": "#FFD700",
+            "accent": "#404040",
+        },
+        "light": {
+            "background": "#FFFFFF",
+            "text": "#000000",
+            "primary": "#90EE90",
+            "secondary": "#FFD700",
+            "accent": "#F0F0F0",
+        }
+    },
+    "fonts": {
+        "primary": "Helvetica Neue",
+        "secondary": "Arial",
+        "monospace": "Courier New",
+    },
+    "animations": {
+        "enabled": True,
+        "duration": 300,
+    }
 }
 
-# Development Settings (should be False in production)
-DEBUG = False
-TESTING = False
+# Feature Flags
+FEATURES = {
+    "mfa": False,
+    "api_access": False,
+    "export": True,
+    "advanced_analytics": True,
+    "threat_intelligence": True,
+}
+
+# API Configuration
+API_CONFIG = {
+    "version": "v1",
+    "base_url": "https://api.diplocyber.com",
+    "timeout": 30,
+    "rate_limit": 100,
+}
+
+# Logging Configuration
+LOG_CONFIG = {
+    "level": "INFO",
+    "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    "file": "logs/diplocyber.log",
+    "max_size": 10485760,  # 10MB
+    "backup_count": 5,
+}
