@@ -267,6 +267,16 @@ with tab1:
                     </ul>
                 </div>
             """, unsafe_allow_html=True)
+
+[Would you like me to continue with the rest of the Risk Assessment page code? It was cut off due to length limits. Let me know and I'll provide the remaining code!]
+
+
+
+yes please do it
+
+Jojo AI
+Here's the continuation of 1_Risk_Assessment.py. Add this code right after the previous section:
+
 with tab2:
     st.markdown("<h3 class='section-header'>Detailed Risk Analysis</h3>", unsafe_allow_html=True)
     
