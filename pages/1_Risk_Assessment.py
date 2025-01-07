@@ -2,6 +2,7 @@ import streamlit as st
 import plotly.graph_objects as go
 import pandas as pd
 from datetime import datetime
+from config import UI_CONFIG, APP_CONFIG
 
 # Page config
 st.set_page_config(
@@ -11,33 +12,31 @@ st.set_page_config(
     menu_items={
         'Get Help': None,
         'Report a bug': None,
-        'About': 'DiploCyber Hub - Risk Assessment Module'
+        'About': f"{APP_CONFIG['name']} - Risk Assessment"
     }
 )
 
-# Custom styling with dark mode support
+# Custom styling
 st.markdown("""
     <style>
-    /* Global theme consistency */
+    /* Main Layout */
     .main {
         background-color: var(--background-color);
         color: var(--text-color);
-        font-family: 'Helvetica Neue', sans-serif;
     }
     
     /* Risk Assessment Header */
     .risk-header {
-        color: #000000;
+        color: var(--text-color);
         font-size: 2.5rem;
         text-align: center;
         padding: 1.5rem;
-        background: linear-gradient(to right, #FFFFFF, #90EE90, #FFFFFF);
+        background: linear-gradient(to right, rgba(144, 238, 144, 0.1), rgba(144, 238, 144, 0.2), rgba(144, 238, 144, 0.1));
         border-radius: 10px;
         margin-bottom: 2rem;
-        font-weight: 600;
     }
     
-    /* Card styling */
+    /* Risk Cards */
     .risk-card {
         background-color: var(--card-background);
         border: 1px solid var(--border-color);
@@ -45,15 +44,14 @@ st.markdown("""
         border-radius: 10px;
         box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
         margin: 10px 0;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        transition: transform 0.3s ease;
     }
     
     .risk-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
     }
     
-    /* Risk level indicators */
+    /* Risk Levels */
     .risk-high {
         border-left: 4px solid #FFD700;
     }
@@ -63,36 +61,26 @@ st.markdown("""
     }
     
     .risk-low {
-        border-left: 4px solid #000000;
+        border-left: 4px solid #404040;
     }
     
-    /* Form styling */
-    .stTextInput>div>div>input {
-        border-radius: 5px;
-        border: 1px solid var(--border-color);
-    }
-    
+    /* Form Elements */
+    .stTextInput>div>div>input,
     .stSelectbox>div>div>div {
-        border-radius: 5px;
-        border: 1px solid var(--border-color);
+        background-color: var(--background-color);
+        color: var(--text-color);
+        border-color: var(--border-color);
     }
     
-    /* Button styling */
-    .stButton>button {
-        background-color: #000000;
-        color: #FFFFFF;
-        border-radius: 20px;
-        padding: 10px 20px;
-        transition: all 0.3s ease;
+    /* Section Headers */
+    .section-header {
+        color: var(--text-color);
+        border-bottom: 2px solid #90EE90;
+        padding-bottom: 10px;
+        margin: 20px 0;
     }
     
-    .stButton>button:hover {
-        background-color: #90EE90;
-        color: #000000;
-        transform: translateY(-2px);
-    }
-    
-    /* Dark mode styles */
+    /* Dark mode */
     [data-theme="dark"] {
         --background-color: #1E1E1E;
         --text-color: #FFFFFF;
@@ -100,51 +88,15 @@ st.markdown("""
         --border-color: #404040;
     }
     
-    /* Light mode styles */
+    /* Light mode */
     [data-theme="light"] {
         --background-color: #FFFFFF;
         --text-color: #000000;
         --card-background: #FFFFFF;
         --border-color: #90EE90;
     }
-    
-    /* Chart containers */
-    .chart-container {
-        background-color: var(--card-background);
-        border-radius: 10px;
-        padding: 15px;
-        margin: 10px 0;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    
-    /* Section headers */
-    .section-header {
-        color: #000000;
-        border-bottom: 2px solid #90EE90;
-        padding-bottom: 10px;
-        margin: 20px 0;
-        font-weight: 600;
-    }
     </style>
 """, unsafe_allow_html=True)
-
-# Initialize theme state
-if 'theme' not in st.session_state:
-    st.session_state.theme = "light"
-
-# Theme toggle in header
-col1, col2 = st.columns([6,1])
-with col2:
-    if st.button("🌓 Toggle Theme"):
-        st.session_state.theme = "dark" if st.session_state.theme == "light" else "light"
-        st.rerun()
-
-# Apply theme
-st.markdown(f"""
-    <script>
-        document.body.setAttribute('data-theme', '{st.session_state.theme}');
-    </script>
-    """, unsafe_allow_html=True)
 
 # Header
 st.markdown("<h1 class='risk-header'>🎯 Risk Assessment</h1>", unsafe_allow_html=True)
@@ -158,16 +110,22 @@ with tab1:
     # Organization Info
     col1, col2 = st.columns(2)
     with col1:
+        st.markdown("<div class='risk-card'>", unsafe_allow_html=True)
         org_name = st.text_input("Organization Name")
         dept_name = st.text_input("Department")
+        st.markdown("</div>", unsafe_allow_html=True)
+    
     with col2:
+        st.markdown("<div class='risk-card'>", unsafe_allow_html=True)
         assessment_date = st.date_input("Assessment Date")
         assessor_name = st.text_input("Assessor Name")
+        st.markdown("</div>", unsafe_allow_html=True)
 
     # Risk Categories
     st.markdown("<h3 class='section-header'>Risk Categories</h3>", unsafe_allow_html=True)
     
     # Technical Controls
+    st.markdown("<div class='risk-card'>", unsafe_allow_html=True)
     st.markdown("#### 1. Technical Controls")
     tech_controls = {
         "Data Encryption": st.select_slider(
@@ -186,8 +144,10 @@ with tab1:
             value="Standard"
         )
     }
+    st.markdown("</div>", unsafe_allow_html=True)
 
     # Policy & Procedures
+    st.markdown("<div class='risk-card'>", unsafe_allow_html=True)
     st.markdown("#### 2. Policy & Procedures")
     policy_controls = {
         "Security Policies": st.select_slider(
@@ -201,8 +161,10 @@ with tab1:
             value="Standard"
         )
     }
+    st.markdown("</div>", unsafe_allow_html=True)
 
     # Human Factors
+    st.markdown("<div class='risk-card'>", unsafe_allow_html=True)
     st.markdown("#### 3. Human Factors")
     human_factors = {
         "Staff Training": st.select_slider(
@@ -216,6 +178,7 @@ with tab1:
             value="Standard"
         )
     }
+    st.markdown("</div>", unsafe_allow_html=True)
 
     if st.button("Calculate Risk Score"):
         # Calculate scores
@@ -268,15 +231,6 @@ with tab1:
                 </div>
             """, unsafe_allow_html=True)
 
-[Would you like me to continue with the rest of the Risk Assessment page code? It was cut off due to length limits. Let me know and I'll provide the remaining code!]
-
-
-
-yes please do it
-
-Jojo AI
-Here's the continuation of 1_Risk_Assessment.py. Add this code right after the previous section:
-
 with tab2:
     st.markdown("<h3 class='section-header'>Detailed Risk Analysis</h3>", unsafe_allow_html=True)
     
@@ -302,7 +256,7 @@ with tab2:
         height=400,
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
-        font=dict(color='#000000')
+        font=dict(color=UI_CONFIG['theme']['dark']['text'])
     )
 
     st.plotly_chart(fig, use_container_width=True)
@@ -314,7 +268,7 @@ with tab2:
         {"type": "Network Security", "severity": "High", "status": "Open", "description": "Outdated firewall configurations"},
         {"type": "Access Control", "severity": "Medium", "status": "In Progress", "description": "Weak password policies"},
         {"type": "Data Protection", "severity": "High", "status": "Open", "description": "Unencrypted data storage"},
-        {"type": "Physical Security", "severity": "Low", "status": "Resolved", "description": "Server room access logs"},
+        {"type": "Physical Security", "severity": "Low", "status": "Resolved", "description": "Server room access logs"}
     ]
 
     for vuln in vulnerabilities:
@@ -384,7 +338,7 @@ with tab3:
         showlegend=False,
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
-        font=dict(color='#000000')
+        font=dict(color=UI_CONFIG['theme']['dark']['text'])
     )
 
     st.plotly_chart(fig, use_container_width=True)
@@ -418,10 +372,3 @@ with st.sidebar:
             <p><strong>Next Scheduled:</strong> 2024-03-15</p>
         </div>
     """, unsafe_allow_html=True)
-    
-    st.markdown("### Quick Actions")
-    if st.button("Schedule Assessment"):
-        st.success("Assessment scheduled successfully!")
-    
-    if st.button("View Previous Reports"):
-        st.info("Loading previous reports...")
