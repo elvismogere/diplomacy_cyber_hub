@@ -7,6 +7,36 @@ import hashlib
 import sqlite3
 import os
 from config import UI_CONFIG, APP_CONFIG
+# Page configuration
+st.set_page_config(
+    page_title="DiploCyber Hub | Home",
+    page_icon="🏠",
+    layout="wide",
+    initial_sidebar_state="expanded",
+    menu_items={
+        'Get Help': None,
+        'Report a bug': None,
+        'About': 'DiploCyber Hub - Home'
+    }
+)
+
+# Hide "app" from navigation and rename to "Home"
+st.markdown("""
+    <style>
+    .css-1oe5cao {
+        display: none;
+    }
+    [data-testid="stSidebarNav"] li:first-child a {
+        display: none;
+    }
+    [data-testid="stSidebarNav"] li:first-child:before {
+        content: "🏠 Home";
+        color: #FFFFFF;
+        margin-left: 20px;
+        font-size: 14px;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
 # Initialize database
 def init_db():
