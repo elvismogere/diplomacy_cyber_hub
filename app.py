@@ -72,7 +72,6 @@ st.set_page_config(
         'About': 'DiploCyber Hub - Home'
     }
 )
-
 # Hide default menu and rename app to Home
 st.markdown("""
     <style>
@@ -86,12 +85,7 @@ st.markdown("""
         color: white;
         margin-left: 20px;
     }
-    </style>
-""", unsafe_allow_html=True)
-
-# Custom styling
-st.markdown("""
-    <style>
+    
     /* Main Layout */
     .main {
         background-color: #1E1E1E;
@@ -157,16 +151,17 @@ st.markdown("""
     
     /* Buttons */
     .stButton>button {
-        background-color: #90EE90;
-        color: #000000;
+        background-color: #2E8B57;  /* Darker green */
+        color: #FFFFFF;
         border-radius: 5px;
         padding: 8px 16px;
         transition: all 0.3s ease;
         width: 100%;
+        font-weight: 500;
     }
     
     .stButton>button:hover {
-        background-color: #7BC47B;
+        background-color: #3CB371;
         transform: translateY(-2px);
     }
     
@@ -246,7 +241,6 @@ if 'username' not in st.session_state:
     st.session_state.username = None
 if 'signup_mode' not in st.session_state:
     st.session_state.signup_mode = False
-
 # Authentication section
 if not st.session_state.authenticated:
     st.markdown("<h1 style='text-align: center; color: #FFFFFF;'>🔒 DiploCyber Hub</h1>", unsafe_allow_html=True)
